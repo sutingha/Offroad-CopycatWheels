@@ -1,0 +1,63 @@
+{
+  "item.offroad.copycat_wheel": "Model Copycat Tire",
+  "item.offroad.copycat_remover": "Copycat Wheel Debugger",
+  "copycatwheels.simulated_section.copycat_wheels": "Copycat Wheels",
+  "block.copycatwheels.copycat_wheel_mount": "Copycat Wheel Mount",
+  "item.offroad.copycat_tire": "Material Copycat Tire",
+
+  "block.copycatwheels.copycat_wheel_mount.tooltip.summary": "Mounts _Model Copycat Tires_ for ground travel.\nIts appearance can be _disguised_ as any full block.",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition1": "When R-Clicked with a block on a side face",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour1": "_Disguises_ the mount as that block.",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition2": "When wrenched on a side face",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour2": "_Removes_ the mount's disguise.",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition3": "When R-Clicked with a Model Copycat Tire on the front face",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour3": "_Installs_ the tire.",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition4": "When R-Clicked with a block on the front face",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour4": "_Disguises_ the installed tire as that block.",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition5": "When Powered From Top",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour5": "_Brakes_ the attached wheel, _increasing friction_.",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition6": "When Powered From Side",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour6": "_Steers_ the wheel toward the _side the signal is from_.",
+
+  "item.offroad.copycat_wheel.tooltip.summary": "A _model tire_ that disguises itself as any block.",
+  "item.offroad.copycat_wheel.tooltip.condition1": "When R-Clicked on a wheel mount",
+  "item.offroad.copycat_wheel.tooltip.behaviour1": "_Installs_ this tire.",
+
+  "item.offroad.copycat_remover.tooltip.summary": "A tool to debug _copycat wheels_.",
+  "item.offroad.copycat_remover.tooltip.condition1": "When R-Clicked on a copycat wheel",
+  "item.offroad.copycat_remover.tooltip.behaviour1": "Operates based on the current _mode_.",
+  "item.offroad.copycat_remover.tooltip.condition2": "While holding Alt and scrolling",
+  "item.offroad.copycat_remover.tooltip.behaviour2": "Switches _modes_.",
+  "item.offroad.copycat_remover.tooltip.condition3": "While holding Shift and R-Clicking",
+  "item.offroad.copycat_remover.tooltip.behaviour3": "Reverses the operation (decrease).",
+
+  "copycatwheels.tooltip.shift_hint": "[Shift] for usage",
+  "copycatwheels.tooltip.current_mode": "Current mode: %s",
+
+  "copycatwheels.msg.copycat_set": "Copy: %s",
+  "copycatwheels.msg.removed": "§aCopycat removed",
+  "copycatwheels.msg.rotated": "§aCopycat rotated",
+  "copycatwheels.msg.reset": "§aTire settings reset",
+  "copycatwheels.msg.no_copycat": "§7No copycat on this wheel mount",
+  "copycatwheels.msg.model_scale": "§aModel scale: %s",
+  "copycatwheels.msg.tire_radius": "§aTire radius: %s",
+  "copycatwheels.msg.friction": "§aFriction multiplier: %s",
+  "copycatwheels.msg.offset": "§aOffset: (%s, %s, %s)",
+
+  "copycatwheels.mode.remove": "§7[§eRemove Mode§7]",
+  "copycatwheels.mode.rotate": "§7[§eRotate Mode§7]",
+  "copycatwheels.mode.scale": "§7[§eScale Mode§7]",
+  "copycatwheels.mode.collision": "§7[§eCollision Mode§7]",
+  "copycatwheels.mode.friction": "§7[§eFriction Mode§7]",
+  "copycatwheels.mode.position": "§7[§ePosition Mode§7]",
+  "copycatwheels.mode.reset": "§7[§eReset Mode§7]",
+  "copycatwheels.mode.inspect": "§7[§dInspect Mode§7]",
+
+  "advancements.copycatwheels.gunmu.title": "WoodAir!",
+  "advancements.copycatwheels.gunmu.description": "AirAirAirAir!",
+
+  "key.categories.copycatwheels": "Copycat Wheels",
+  "key.copycatwheels.camo_hint_toggle": "Toggle Copycat Hint",
+  "copycatwheels.msg.camo_hint_on": "Copycat hint: ON",
+  "copycatwheels.msg.camo_hint_off": "Copycat hint: OFF"
+}

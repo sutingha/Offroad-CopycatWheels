@@ -1,0 +1,62 @@
+{
+  "item.offroad.copycat_wheel": "模型伪装轮",
+  "item.offroad.copycat_remover": "伪装轮调试器",
+  "copycatwheels.simulated_section.copycat_wheels": "伪装轮",
+  "block.copycatwheels.copycat_wheel_mount": "伪装车轮悬架",
+  "item.offroad.copycat_tire": "材质伪装轮",
+
+  "block.copycatwheels.copycat_wheel_mount.tooltip.summary": "承载_模型伪装轮_，以在地面上行驶。\n其外观可被伪装成_任意完整方块_。",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition1": "手持方块右击侧面时",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour1": "将轮架外观_伪装_为该方块。",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition2": "手持扳手右击侧面时",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour2": "_移除_轮架外观。",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition3": "手持模型伪装轮右击正面时",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour3": "_安装_该轮胎。",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition4": "手持方块右击装好轮胎的正面时",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour4": "将轮胎外观_伪装_为该方块。",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition5": "从上方通入红石信号时",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour5": "_增大摩擦力_，让车轮_刹停_。",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.condition6": "从侧面通入红石信号时",
+  "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour6": "让车轮_转向信号源侧_。",
+
+  "item.offroad.copycat_wheel.tooltip.summary": "可伪装成任意方块的_模型轮胎_。",
+  "item.offroad.copycat_wheel.tooltip.condition1": "手持该轮右击车轮悬架时",
+  "item.offroad.copycat_wheel.tooltip.behaviour1": "将该轮_安装_到悬架上。",
+
+  "item.offroad.copycat_remover.tooltip.summary": "调试_伪装车轮_的工具。",
+  "item.offroad.copycat_remover.tooltip.condition1": "手持调试器右击伪装轮时",
+  "item.offroad.copycat_remover.tooltip.behaviour1": "根据当前_模式_操作伪装。",
+  "item.offroad.copycat_remover.tooltip.condition2": "按住 Alt 滚动滚轮时",
+  "item.offroad.copycat_remover.tooltip.behaviour2": "切换_模式_。",
+  "item.offroad.copycat_remover.tooltip.condition3": "按住 Shift 右击时",
+  "item.offroad.copycat_remover.tooltip.behaviour3": "反向操作（减小）。",
+
+  "copycatwheels.tooltip.shift_hint": "[Shift] 查看使用方法",
+  "copycatwheels.tooltip.current_mode": "当前模式: %s",
+
+  "copycatwheels.msg.copycat_set": "伪装: %s",
+  "copycatwheels.msg.removed": "§a已移除伪装方块",
+  "copycatwheels.msg.rotated": "§a已旋转伪装模型",
+  "copycatwheels.msg.reset": "§a已重置轮胎设置",
+  "copycatwheels.msg.no_copycat": "§7该轮架上没有伪装方块",
+  "copycatwheels.msg.model_scale": "§a伪装模型大小: %s",
+  "copycatwheels.msg.tire_radius": "§a轮胎半径: %s",
+  "copycatwheels.msg.friction": "§a摩擦力倍率: %s",
+  "copycatwheels.msg.offset": "§a位置偏移: (%s, %s, %s)",
+
+  "copycatwheels.mode.remove": "§7[§e拆除模式§7]",
+  "copycatwheels.mode.rotate": "§7[§e旋转模式§7]",
+  "copycatwheels.mode.scale": "§7[§e缩放模式§7]",
+  "copycatwheels.mode.collision": "§7[§e碰撞模式§7]",
+  "copycatwheels.mode.friction": "§7[§e摩擦力模式§7]",
+  "copycatwheels.mode.position": "§7[§e位置模式§7]",
+  "copycatwheels.mode.reset": "§7[§e重置模式§7]",
+
+  "advancements.copycatwheels.gunmu.title": "滚木！",
+  "advancements.copycatwheels.gunmu.description": "棍母棍母棍母!",
+
+  "key.categories.copycatwheels": "伪装轮",
+  "key.copycatwheels.camo_hint_toggle": "切换伪装提示",
+  "copycatwheels.msg.camo_hint_on": "伪装提示已开启",
+  "copycatwheels.msg.camo_hint_off": "伪装提示已关闭"
+}

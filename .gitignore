@@ -1,0 +1,21 @@
+# Run folder (Minecraft / dev runtime)
+run/
+#run/crash-reports
+#run/logs
+#run/.sable
+
+
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Logs
+*.log
+
+/out
+/modinfo
+libs/*.jar

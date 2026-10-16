@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "offroad:block/copycat_wheel_mount/copycat_wheel_mount_skeleton" },
+    "facing=east":  { "model": "offroad:block/copycat_wheel_mount/copycat_wheel_mount_skeleton", "y": 90 },
+    "facing=south": { "model": "offroad:block/copycat_wheel_mount/copycat_wheel_mount_skeleton", "y": 180 },
+    "facing=west":  { "model": "offroad:block/copycat_wheel_mount/copycat_wheel_mount_skeleton", "y": 270 }
+  }
+}

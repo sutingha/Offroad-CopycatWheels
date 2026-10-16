@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "copycats:copycat_block"
+    },
+    "P": {
+      "tag": "c:plates/iron"
+    },
+    "S": {
+      "item": "simulated:spring"
+    }
+  },
+  "pattern": [
+    "C",
+    "S",
+    "P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "offroad:copycat_wheel_mount"
+  }
+}

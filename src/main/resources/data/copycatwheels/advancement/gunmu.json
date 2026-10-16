@@ -1,0 +1,30 @@
+{
+  "parent": "simulated:no_pressure",
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "color": "#DBA213",
+      "translate": "advancements.copycatwheels.gunmu.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "copycatwheels:gunmu_icon"
+    },
+    "title": {
+      "translate": "advancements.copycatwheels.gunmu.title"
+    },
+    "hidden": true,
+    "show_toast": true
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

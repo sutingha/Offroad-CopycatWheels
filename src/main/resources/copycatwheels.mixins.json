@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.suting.copycatwheels.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "copycatwheels.refmap.json",
+  "mixins": [
+    "AdjustableWheelMountRendererMixin",
+    "OffroadItemsMixin",
+    "WheelMountBlockMixin",
+    "WheelMountBlockEntityMixin",
+    "WheelMountBlockEntityFrictionMixin",
+    "WheelMountBlockEntitySmoothingMixin",
+    "WheelMountInventoryMixin",
+    "WheelMountRendererMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

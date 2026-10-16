@@ -1,0 +1,18 @@
+# Made in Blockbench 5.2.1
+newmtl m_90666476-4da9-7641-3e46-126b45e6a1e6
+map_Kd #wheel_front
+newmtl m_61d15bd3-5467-07a6-9c78-9c95ff2da30e
+map_Kd #wheel_left
+newmtl m_5640598d-c55a-8bcc-52df-82c10874f15d
+map_Kd #wheel_top
+newmtl m_be8bd21c-611c-ffac-48d9-5642ecbcd391
+map_Kd #wheel_back
+newmtl m_84581322-00c4-00bd-3c58-f2e06ee2130c
+map_Kd #axis
+newmtl m_08b07c55-1dcb-b028-bde3-c771d3ad5465
+map_Kd #axis_top
+newmtl m_64aabac1-b698-d2ab-f957-cfad63c26f1c
+map_Kd #wheel_right
+newmtl m_0605fc23-15b3-31ae-14c4-fb677a712173
+map_Kd #wheel_button
+newmtl none

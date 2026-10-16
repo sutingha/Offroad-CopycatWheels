@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "copycats"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "AG ",
+    " C ",
+    " S "
+  ],
+  "key": {
+    "C": {
+      "item": "create:cogwheel"
+    },
+    "G": {
+      "item": "create:golden_sheet"
+    },
+    "A": {
+      "item": "create:andesite_alloy"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "offroad:copycat_remover"
+  }
+}

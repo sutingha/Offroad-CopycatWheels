@@ -1,0 +1,11 @@
+{
+  "priority": 3000,
+  "title": {
+    "text": { "translate": "copycatwheels.simulated_section.copycat_wheels" },
+    "background": "#aa3a4445",
+    "color": "#ffe5dcd0",
+    "secondary_color": "#ffc0b9ae"
+  },
+  "sprite": "copycatwheels:banner",
+  "only_animate_on_hover": true
+}

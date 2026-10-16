@@ -1,0 +1,18 @@
+{
+    "parent": "block/air",
+    "ambientocclusion": false,
+    "textures": {
+        "wheel_front": "copycatwheels:block/copycat_tire/wheel_front",
+        "wheel_back": "copycatwheels:block/copycat_tire/wheel_back",
+        "wheel_left": "copycatwheels:block/copycat_tire/wheel_left",
+        "wheel_right": "copycatwheels:block/copycat_tire/wheel_right",
+        "wheel_top": "copycatwheels:block/copycat_tire/wheel_top",
+        "wheel_button": "copycatwheels:block/copycat_tire/wheel_button",
+        "axis": "copycatwheels:block/copycat_tire/axis",
+        "axis_top": "copycatwheels:block/copycat_tire/axis_top",
+        "particle": "copycatwheels:block/copycat_tire/wheel_top"
+    },
+    "loader": "neoforge:obj",
+    "flip_v": true,
+    "model": "copycatwheels:models/block/copycat_tire/copycat_tire.obj"
+}
