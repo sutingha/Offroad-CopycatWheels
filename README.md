@@ -23,6 +23,7 @@ An addon for **Create: Aeronautics** that adds copycat wheel mounts and copycat 
 
 - **Create: Tracks** — Copycat Wheel Mounts will use Tracks' adjustable renderer when installed.
 - **Create: Bits 'n' Bobs** — Flanged cogwheels can be a tire.
+- **Steam 'n' Rails NeoForge** — locometal flywheels also can be tire.
 
 ## Key Binds
 

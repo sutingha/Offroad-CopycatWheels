@@ -21,9 +21,10 @@
 
 ## 可选兼容
 
-- **Create: Tracks** - 依托神秘的反射，现在可以兼容tracks的调解器
+- **Create: Tracks** - 依托神秘的反射，现在可以兼容tracks的调节器
        -（其实本来接口一样就有反应，但是不会再渲染层做任何动作，所以写了适配mixin。
 - **Create: Bits 'n' Bobs** - 为overrides补充了零零件件的法轮模型，可以正常用于伪装轮
+- **Steam 'n' Rails NeoForge** - 为overrides补充了汽鸣铁道的机车飞轮模型，可以正常用于伪装轮
 
 ## 按键绑定
 
