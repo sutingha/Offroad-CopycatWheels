@@ -134,7 +134,7 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
         return this.copycatWheels$material;
     }
 
-    @Unique
+        @Unique
     private void copycatWheels$sync() {
         final WheelMountBlockEntity self = (WheelMountBlockEntity) (Object) this;
         self.setChanged();
@@ -144,6 +144,8 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
         if (self.getLevel() != null) {
             self.getLevel().sendBlockUpdated(
                     self.getBlockPos(), self.getBlockState(), self.getBlockState(), 3);
+
+            self.getLevel().getChunkSource().getLightEngine().checkBlock(self.getBlockPos());
         }
     }
 

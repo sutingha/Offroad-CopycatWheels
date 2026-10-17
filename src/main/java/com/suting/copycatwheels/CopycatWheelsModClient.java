@@ -26,22 +26,19 @@ public class CopycatWheelsModClient {
 
         modEventBus.addListener((RegisterKeyMappingsEvent event) -> {
             event.register(CopycatKeys.CAMO_HINT_TOGGLE);
-           // CopycatWheelsMod.LOGGER.info("[CW-KEY] registered camo hint key: {}",
-            //        CopycatKeys.CAMO_HINT_TOGGLE.getName());
         });
     }
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
-        //CopycatWheelsMod.LOGGER.info("Copycat Wheels: client setup");
+        CopycatWheelsMod.LOGGER.info("Copycat Wheels: client setup");
 
- 
         CopycatRenderState.camoHintEnabled = CopycatConfig.SHOW_CAMO_HINT.get();
 
         event.enqueueWork(() -> {
             ItemBlockRenderTypes.setRenderLayer(
                     CopycatWheelsBlocks.COPYCAT_WHEEL_MOUNT.get(),
-                    RenderType.cutoutMipped()
+                    RenderType.translucent()  // ★ 改回 translucent
             );
             CopycatWheelsClientColors.register();
         });

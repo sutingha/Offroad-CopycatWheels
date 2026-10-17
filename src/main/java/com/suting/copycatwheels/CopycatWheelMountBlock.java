@@ -19,13 +19,11 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 
 public class CopycatWheelMountBlock extends WheelMountBlock {
 
@@ -39,9 +37,20 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
     }
 
     @Override
+    public boolean hasDynamicLightEmission(final BlockState state) {
+        return true; // 声明本方块具有动态光照，光照引擎会不断查询 getLightEmission
+    }
+
+    @Override
     public int getLightEmission(final BlockState state, final BlockGetter level, final BlockPos pos) {
-        final AuxiliaryLightManager lm = level.getAuxLightManager(pos);
-        return lm != null ? lm.getLightAt(pos) : super.getLightEmission(state, level, pos);
+        if (level.getBlockEntity(pos) instanceof final WheelMountBlockEntity be
+                && be instanceof final CopycatWheelAccess access) {
+            final BlockState material = access.copycatWheels$getMaterial();
+            if (material != null && !material.isAir()) {
+                return material.getLightEmission(level, pos);
+            }
+        }
+        return super.getLightEmission(state, level, pos);
     }
 
     @Override
@@ -72,7 +81,7 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
                     access.copycatWheels$setMaterial(null);
                     level.playSound(null, pos, material.getSoundType().getBreakSound(),
                             SoundSource.BLOCKS, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
-                    level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(material));
+                    level.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(material));
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -108,7 +117,6 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
             final Direction hitFace = hitResult.getDirection();
             final Direction facing = state.getValue(WheelMountBlock.HORIZONTAL_FACING);
 
-            // 正面 / 底面 → super（装轮胎）
             if (hitFace.equals(facing) || hitFace == Direction.DOWN) {
                 return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
             }
@@ -151,11 +159,12 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
             }
             level.playSound(null, pos, newMaterial.getSoundType().getPlaceSound(),
                     SoundSource.BLOCKS, 1.0F, 0.95F);
+            
             if (CopycatRenderState.camoHintEnabled) {
                 player.displayClientMessage(
                         Component.translatable("copycatwheels.msg.copycat_set",
-                            BuiltInRegistries.BLOCK.getKey(block).toString()),
-                    true);
+                                BuiltInRegistries.BLOCK.getKey(block).toString()),
+                        true);
             }
             return ItemInteractionResult.SUCCESS;
         }

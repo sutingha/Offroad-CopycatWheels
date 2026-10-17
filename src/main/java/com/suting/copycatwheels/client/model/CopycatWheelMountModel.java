@@ -4,6 +4,7 @@ import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
 import com.suting.copycatwheels.CopycatWheelAccess;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -15,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 import net.neoforged.neoforge.client.model.QuadTransformers;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +32,11 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
     public CopycatWheelMountModel(final BakedModel originalModel, @Nullable final BakedModel skinModel) {
         super(originalModel);
         this.skinModel = skinModel;
+    }
+
+    @Override
+    public boolean useAmbientOcclusion() {
+        return false; 
     }
 
     @Override
@@ -63,6 +70,20 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
     }
 
     @Override
+    public ChunkRenderTypeSet getRenderTypes(final BlockState state, final RandomSource rand, final ModelData data) {
+        final BlockState material = data.get(CopycatWheelModelProperties.MATERIAL_PROPERTY);
+        if (material != null && !material.isAir()) {
+            try {
+                final RenderType matType = ItemBlockRenderTypes.getChunkRenderType(material);
+                if (matType == RenderType.translucent()) {
+                    return ChunkRenderTypeSet.of(RenderType.cutoutMipped(), RenderType.translucent());
+                }
+            } catch (final Throwable ignored) {}
+        }
+        return ChunkRenderTypeSet.of(RenderType.cutoutMipped());
+    }
+
+    @Override
     public List<BakedQuad> getQuads(
             @Nullable final BlockState state,
             @Nullable final Direction side,
@@ -70,13 +91,40 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
             final ModelData data,
             @Nullable final RenderType renderType
     ) {
-        final List<BakedQuad> result = new ArrayList<>();
-        result.addAll(this.originalModel.getQuads(state, side, rand, data, renderType));
+        final BlockState material = data.get(CopycatWheelModelProperties.MATERIAL_PROPERTY);
+        boolean isTranslucentMat = false;
+        if (material != null && !material.isAir()) {
+            try {
+                isTranslucentMat = ItemBlockRenderTypes.getChunkRenderType(material) == RenderType.translucent();
+            } catch (final Throwable ignored) {}
+        }
 
-        if (this.skinModel == null) return result;
+        if (renderType == RenderType.translucent()) {
+            if (!isTranslucentMat) return List.of();
+            return copycatWheels$getSkinQuads(state, side, rand, data, renderType);
+        } else {
+            //
+            final List<BakedQuad> result = new ArrayList<>(this.originalModel.getQuads(state, side, rand, data, renderType));
+
+            if (isTranslucentMat && renderType != null) {
+                return result;
+            }
+            result.addAll(copycatWheels$getSkinQuads(state, side, rand, data, renderType));
+            return result;
+        }
+    }
+
+    private List<BakedQuad> copycatWheels$getSkinQuads(
+            @Nullable final BlockState state,
+            @Nullable final Direction side,
+            final RandomSource rand,
+            final ModelData data,
+            @Nullable final RenderType renderType
+    ) {
+        if (this.skinModel == null) return List.of();
 
         final List<BakedQuad> skinQuadsRaw = this.skinModel.getQuads(state, side, rand, data, renderType);
-        if (skinQuadsRaw.isEmpty()) return result;
+        if (skinQuadsRaw.isEmpty()) return List.of();
 
         final int quarter = copycatWheels$yQuarter(state);
         final BlockState material = data.get(CopycatWheelModelProperties.MATERIAL_PROPERTY);
@@ -99,12 +147,14 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
                     q.getTintIndex(),
                     q.getDirection(),
                     q.getSprite(),
-                    q.isShade()));
+                    q.isShade())); 
         }
 
         if (emissive) {
             QuadTransformers.settingMaxEmissivity().processInPlace(skinQuads);
         }
+
+        final List<BakedQuad> result = new ArrayList<>();
 
         for (final BakedQuad originalQuad : skinQuads) {
             List<BakedQuad> candidates = null;
@@ -206,5 +256,4 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
         for (int i = 0; i < quarter; i++) result = result.getClockWise();
         return result;
     }
-    //
 }
