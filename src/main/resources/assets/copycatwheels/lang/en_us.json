@@ -59,5 +59,6 @@
   "key.categories.copycatwheels": "Copycat Wheels",
   "key.copycatwheels.camo_hint_toggle": "Toggle Copycat Hint",
   "copycatwheels.msg.camo_hint_on": "Copycat hint: ON",
-  "copycatwheels.msg.camo_hint_off": "Copycat hint: OFF"
+  "copycatwheels.msg.camo_hint_off": "Copycat hint: OFF",
+  "copycatwheels.mode.scroll_hint": " §8[§7Scroll to switch§8]"
 }

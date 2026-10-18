@@ -58,5 +58,6 @@
   "key.categories.copycatwheels": "伪装轮",
   "key.copycatwheels.camo_hint_toggle": "切换伪装提示",
   "copycatwheels.msg.camo_hint_on": "伪装提示已开启",
-  "copycatwheels.msg.camo_hint_off": "伪装提示已关闭"
+  "copycatwheels.msg.camo_hint_off": "伪装提示已关闭",
+  "copycatwheels.mode.scroll_hint": " §8[§7滚轮切换§8]"
 }

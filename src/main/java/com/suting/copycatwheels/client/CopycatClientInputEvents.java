@@ -58,11 +58,11 @@ public class CopycatClientInputEvents {
             default -> "copycatwheels.mode.reset";
         };
 
-        //mc.gui.setOverlayMessage(
-                //Component.translatable(modeKey)
-                //        .copy()
-                //        .append(Component.literal(" §8[§7滚轮切换§8]")),
-                //false);
+        mc.gui.setOverlayMessage(
+                Component.translatable(modeKey)
+                        .copy()
+                        .append(Component.translatable("copycatwheels.mode.scroll_hint")),
+                false);
     }
 
     @SubscribeEvent
