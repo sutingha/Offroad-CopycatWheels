@@ -19,10 +19,6 @@ public final class CopycatWheelsModelRegistration {
     public static final ResourceLocation SKIN_MODEL = ResourceLocation.fromNamespaceAndPath(
             "offroad", "block/copycat_wheel_mount/copycat_wheel_mount_skin");
 
-    //材质伪装轮的OBJ模型已经废弃
-    //public static final ResourceLocation TIRE_OBJ_MODEL = ResourceLocation.fromNamespaceAndPath(
-    //         "copycatwheels", "block/copycat_tire");
-
     private CopycatWheelsModelRegistration() {}
 
     public static void register(final IEventBus modEventBus) {
@@ -32,7 +28,6 @@ public final class CopycatWheelsModelRegistration {
     private static void onRegisterAdditional(final RegisterAdditional event) {
         event.register(ModelResourceLocation.standalone(SKELETON_MODEL));
         event.register(ModelResourceLocation.standalone(SKIN_MODEL));
-        // event.register(ModelResourceLocation.standalone(TIRE_OBJ_MODEL));
 
         final Minecraft mc = Minecraft.getInstance();
         if (mc == null) return;
@@ -44,7 +39,7 @@ public final class CopycatWheelsModelRegistration {
                     loc -> loc.getNamespace().equals("offroad") && loc.getPath().endsWith(".json")
             );
         } catch (final Throwable t) {
-            //CopycatWheelsMod.LOGGER.warn("[CW-REG] failed to scan override models", t);
+            CopycatWheelsMod.LOGGER.warn("[CW-REG] failed to scan override models", t);
             return;
         }
 
@@ -54,12 +49,11 @@ public final class CopycatWheelsModelRegistration {
             if (!path.startsWith("models/") || !path.endsWith(".json")) continue;
 
             final String modelPath = path.substring("models/".length(), path.length() - ".json".length());
-            final ResourceLocation modelLoc =
-                    ResourceLocation.fromNamespaceAndPath(rl.getNamespace(), modelPath);
+            final ResourceLocation modelLoc = ResourceLocation.fromNamespaceAndPath(rl.getNamespace(), modelPath);
             event.register(ModelResourceLocation.standalone(modelLoc));
             count++;
         }
 
-        //CopycatWheelsMod.LOGGER.info("[CW-REG] registered {} override models + skeleton + skin", count);
+        //CopycatWheelsMod.LOGGER.info("[CW-REG] registered {} override models + skeleton/skin", count);
     }
 }

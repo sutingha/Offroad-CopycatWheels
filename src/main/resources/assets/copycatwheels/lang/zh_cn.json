@@ -59,5 +59,17 @@
   "key.copycatwheels.camo_hint_toggle": "切换伪装提示",
   "copycatwheels.msg.camo_hint_on": "伪装提示已开启",
   "copycatwheels.msg.camo_hint_off": "伪装提示已关闭",
-  "copycatwheels.mode.scroll_hint": " §8[§7滚轮切换§8]"
+  "copycatwheels.mode.scroll_hint": " §8[§7滚轮切换§8]",
+
+  "copycatwheels.configuration.wheel": "车轮物理",
+  "copycatwheels.configuration.wheel.button": "车轮物理",
+  "copycatwheels.configuration.roll": "滚动阻力系数",
+  "copycatwheels.configuration.roll.tooltip": "车轮的滚动阻力系数（默认 0.1）",
+  
+  "copycatwheels.configuration.client": "客户端设置",
+  "copycatwheels.configuration.client.button": "客户端设置",
+  "copycatwheels.configuration.hideActionMessages": "隐藏操作提示",
+  "copycatwheels.configuration.hideActionMessages.tooltip": "是否隐藏快捷栏上方的操作提示消息",
+  "copycatwheels.configuration.showCamoHint": "显示伪装提示",
+  "copycatwheels.configuration.showCamoHint.tooltip": "伪装方块时是否在快捷栏上方显示材质名称（可在按键控制中设置快捷键切换）"
 }

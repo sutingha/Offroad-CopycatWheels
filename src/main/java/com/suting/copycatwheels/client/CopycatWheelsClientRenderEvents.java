@@ -21,7 +21,6 @@ import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -140,9 +139,9 @@ public class CopycatWheelsClientRenderEvents {
         if (found > 0) {
             int n = copycatWheels$frameCounter.incrementAndGet();
             if (n <= 3 || n % 300 == 0) {
-                /**CopycatWheelsMod.LOGGER.info(
+                CopycatWheelsMod.LOGGER.info(
                         "[CopycatWheels] ClientRenderEvents: rendered {} copycat blocks (frame #{})",
-                        found, n);**/
+                        found, n);
             }
         }
     }
@@ -169,7 +168,7 @@ public class CopycatWheelsClientRenderEvents {
         BlockState blockState = block.defaultBlockState();
         if (blockState.isAir()) return false;
 
-        //if (CopycatRenderState.gunmuMode && blockState.is(BlockTags.LOGS)) return true;
+        if (CopycatRenderState.gunmuMode && blockState.is(BlockTags.LOGS)) return true;
 
         BlockPos pos = mount.getBlockPos();
         int light = LightTexture.pack(
@@ -277,7 +276,7 @@ public class CopycatWheelsClientRenderEvents {
             final ResourceLocation aliasPath = copycatWheels$deriveOverridePath(alias);
             if (copycatWheels$resourceExists(aliasPath)) {
                 copycatWheels$overrideCache.put(blockId, true);
-                //CopycatWheelsMod.LOGGER.info("[CW-OVERRIDE] {} -> alias {}", blockId, alias);
+                CopycatWheelsMod.LOGGER.info("[CW-OVERRIDE] {} -> alias {}", blockId, alias);
                 return aliasPath;
             }
         }
@@ -308,7 +307,7 @@ public class CopycatWheelsClientRenderEvents {
             VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
             buf.light(light).renderInto(ms, vb);
         } catch (Throwable t) {
-            //CopycatWheelsMod.LOGGER.warn("[CW-OVERRIDE] failed to render custom model {}", modelLoc, t);
+            CopycatWheelsMod.LOGGER.warn("[CW-OVERRIDE] failed to render custom model {}", modelLoc, t);
         }
     }
 
@@ -404,6 +403,7 @@ public class CopycatWheelsClientRenderEvents {
 
             final double dx = lateralDir.getStepX() * lateral - facing.getStepX() * longitudinal;
             final double dz = lateralDir.getStepZ() * lateral - facing.getStepZ() * longitudinal;
+
             ms.translate(dx, height, dz);
         } catch (Throwable t) {
             //CopycatWheelsMod.LOGGER.warn("[CW-TRACKS] offset invocation failed, disabling", t);

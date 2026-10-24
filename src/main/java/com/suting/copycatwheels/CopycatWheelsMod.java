@@ -38,7 +38,10 @@ public class CopycatWheelsMod {
         CopycatWheelsBlocks.register(modEventBus);
         CopycatWheelsBlockEntityTypes.register(modEventBus);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, CopycatConfig.SPEC);
+        //modContainer.registerConfig(ModConfig.Type.COMMON, CopycatConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.SERVER, CopycatConfig.SERVER_SPEC);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, CopycatConfig.CLIENT_SPEC);
+        
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
     }
 

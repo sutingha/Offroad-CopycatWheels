@@ -60,5 +60,17 @@
   "key.copycatwheels.camo_hint_toggle": "Toggle Copycat Hint",
   "copycatwheels.msg.camo_hint_on": "Copycat hint: ON",
   "copycatwheels.msg.camo_hint_off": "Copycat hint: OFF",
-  "copycatwheels.mode.scroll_hint": " §8[§7Scroll to switch§8]"
+  "copycatwheels.mode.scroll_hint": " §8[§7Scroll to switch§8]",
+
+  "copycatwheels.configuration.wheel": "Wheel Physics",
+  "copycatwheels.configuration.wheel.button": "Wheel Physics",
+  "copycatwheels.configuration.roll": "Rolling Resistance",
+  "copycatwheels.configuration.roll.tooltip": "The rolling resistance coefficient for the wheel (default 0.1)",
+  
+  "copycatwheels.configuration.client": "Client Settings",
+  "copycatwheels.configuration.client.button": "Client Settings",
+  "copycatwheels.configuration.hideActionMessages": "Hide Action Messages",
+  "copycatwheels.configuration.hideActionMessages.tooltip": "Hides action messages above the hotbar",
+  "copycatwheels.configuration.showCamoHint": "Show Copycat Hint",
+  "copycatwheels.configuration.showCamoHint.tooltip": "Shows the material name when applying a copycat block. Can be toggled with a keybind."
 }

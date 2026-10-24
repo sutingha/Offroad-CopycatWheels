@@ -20,12 +20,11 @@ public class CopycatWheelsClientModelEvents {
     public static void onModifyBakingResult(final ModifyBakingResult event) {
         final Map<ModelResourceLocation, BakedModel> models = event.getModels();
 
-        final ModelResourceLocation skinKey =
-                ModelResourceLocation.standalone(CopycatWheelsModelRegistration.SKIN_MODEL);
+        final ModelResourceLocation skinKey = ModelResourceLocation.standalone(CopycatWheelsModelRegistration.SKIN_MODEL);
         final BakedModel skinModel = models.get(skinKey);
 
         if (skinModel == null) {
-            //CopycatWheelsMod.LOGGER.warn("[CW-MODEL] skin model not found: {}", skinKey);
+            CopycatWheelsMod.LOGGER.warn("[CW-MODEL] skin model not found: {}", skinKey);
         }
 
         final List<ModelResourceLocation> targets = new ArrayList<>();
@@ -40,7 +39,7 @@ public class CopycatWheelsClientModelEvents {
             final BakedModel original = models.get(key);
             if (original == null) continue;
             models.put(key, new CopycatWheelMountModel(original, skinModel));
-            //CopycatWheelsMod.LOGGER.info("[CW-MODEL] wrapped {} (skin={})", key, skinModel != null);
+            CopycatWheelsMod.LOGGER.info("[CW-MODEL] wrapped {} (skin={})", key, skinModel != null);
         }
     }
 }

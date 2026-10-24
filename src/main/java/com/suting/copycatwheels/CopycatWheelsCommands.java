@@ -54,7 +54,8 @@ public class CopycatWheelsCommands {
                             .executes(context -> {
                                 double value = DoubleArgumentType.getDouble(context, "value");
                                 CopycatConfig.ROLL.set(value);
-                                CopycatConfig.SPEC.save();
+                                //CopycatConfig.SPEC.save();
+                                CopycatConfig.SERVER_SPEC.save();
                                 context.getSource().sendSuccess(
                                     () -> Component.literal("Roll updated to " + value), false);
                                 return 1;

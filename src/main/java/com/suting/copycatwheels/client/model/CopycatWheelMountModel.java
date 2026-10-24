@@ -34,9 +34,10 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
         this.skinModel = skinModel;
     }
 
+
     @Override
     public boolean useAmbientOcclusion() {
-        return false; 
+        return super.useAmbientOcclusion(); 
     }
 
     @Override
@@ -103,7 +104,6 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
             if (!isTranslucentMat) return List.of();
             return copycatWheels$getSkinQuads(state, side, rand, data, renderType);
         } else {
-            //
             final List<BakedQuad> result = new ArrayList<>(this.originalModel.getQuads(state, side, rand, data, renderType));
 
             if (isTranslucentMat && renderType != null) {
@@ -201,7 +201,6 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
             final BakedQuad quad, final TextureAtlasSprite newSprite, final int newTintIndex) {
 
         final int[] vertices = quad.getVertices().clone();
-        final int stride = 8;
         final TextureAtlasSprite oldSprite = quad.getSprite();
         final float oldU0 = oldSprite.getU0();
         final float oldV0 = oldSprite.getV0();
@@ -238,12 +237,27 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
 
         for (int i = 0; i < 4; i++) {
             final int base = i * 8;
+            
             final float x = Float.intBitsToFloat(vertices[base]) - 0.5F;
             final float z = Float.intBitsToFloat(vertices[base + 2]) - 0.5F;
             final float nx = x * cos - z * sin;
             final float nz = x * sin + z * cos;
             vertices[base] = Float.floatToRawIntBits(nx + 0.5F);
             vertices[base + 2] = Float.floatToRawIntBits(nz + 0.5F);
+            
+            if (vertices.length >= (i + 1) * 8) {
+                final int normal = vertices[base + 7];
+                final float normX = (byte) (normal & 0xFF) / 127.0F;
+                final float normY = (byte) ((normal >> 8) & 0xFF) / 127.0F;
+                final float normZ = (byte) ((normal >> 16) & 0xFF) / 127.0F;
+
+                final float rnx = normX * cos - normZ * sin;
+                final float rnz = normX * sin + normZ * cos;
+
+                vertices[base + 7] = ((byte) (rnx * 127) & 0xFF)
+                        | (((byte) (normY * 127) & 0xFF) << 8)
+                        | (((byte) (rnz * 127) & 0xFF) << 16);
+            }
         }
 
         final Direction newDir = copycatWheels$rotateDirection(quad.getDirection(), quarter);

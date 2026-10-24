@@ -4,32 +4,38 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class CopycatConfig {
 
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-
+    public static final ModConfigSpec SERVER_SPEC;
     public static final ModConfigSpec.DoubleValue ROLL;
+
+    public static final ModConfigSpec CLIENT_SPEC;
     public static final ModConfigSpec.BooleanValue HIDE_ACTION_MESSAGES;
     public static final ModConfigSpec.BooleanValue SHOW_CAMO_HINT;
 
     static {
-        BUILDER.push("wheel");
-        BUILDER.comment("Copycat wheel configuration");
+        final ModConfigSpec.Builder serverBuilder = new ModConfigSpec.Builder();
+        serverBuilder.push("wheel");
+        serverBuilder.comment("Copycat wheel configuration");
 
-        ROLL = BUILDER
+        ROLL = serverBuilder
                 .comment("Rolling resistance coefficient")
                 .defineInRange("roll", 0.1, 0.0, 100.0);
 
-        BUILDER.pop();
+        serverBuilder.pop();
+        SERVER_SPEC = serverBuilder.build();
 
-        BUILDER.push("client");
-        HIDE_ACTION_MESSAGES = BUILDER
-                .comment("Hide other action messages shown above the hotbar when manipulating copycat wheels")
+        final ModConfigSpec.Builder clientBuilder = new ModConfigSpec.Builder();
+        clientBuilder.push("client");
+        clientBuilder.comment("Copycat wheel client configuration");
+
+        HIDE_ACTION_MESSAGES = clientBuilder
+                .comment("Hide action messages shown above the hotbar when manipulating copycat wheels")
                 .define("hideActionMessages", true);
 
-        SHOW_CAMO_HINT = BUILDER
-                .comment("Show copycat material hint. Toggle with F3 + key (configurable in Controls).")
+        SHOW_CAMO_HINT = clientBuilder
+                .comment("Show material hint when applying copycat block. Can be toggled in-game via key bind.")
                 .define("showCamoHint", false);
-        BUILDER.pop();
-    }
 
-    public static final ModConfigSpec SPEC = BUILDER.build();
+        clientBuilder.pop();
+        CLIENT_SPEC = clientBuilder.build();
+    }
 }

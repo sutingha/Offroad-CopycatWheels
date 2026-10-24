@@ -1,5 +1,6 @@
 package com.suting.copycatwheels.client;
 
+import com.suting.copycatwheels.CopycatConfig;
 import com.suting.copycatwheels.CopycatItems;
 import com.suting.copycatwheels.CopycatRenderState;
 import com.suting.copycatwheels.CopycatWheelsMod;
@@ -31,20 +32,23 @@ public class CopycatClientInputEvents {
         final Player player = mc.player;
         if (player == null) return;
 
-        //确定伪装提示是否开启，只是为了overrides渲染做的
+        //
         while (CopycatKeys.CAMO_HINT_TOGGLE.consumeClick()) {
-            CopycatRenderState.camoHintEnabled = !CopycatRenderState.camoHintEnabled;
-            //CopycatWheelsMod.LOGGER.info("[CW-KEY] camo hint toggled: {}",
-            //       CopycatRenderState.camoHintEnabled);
+            final boolean newState = !CopycatRenderState.camoHintEnabled;
+            CopycatRenderState.camoHintEnabled = newState;
+
+            //写入配置并保存
+            CopycatConfig.SHOW_CAMO_HINT.set(newState);
+            CopycatConfig.CLIENT_SPEC.save();
 
             player.displayClientMessage(
-                    Component.translatable(CopycatRenderState.camoHintEnabled
+                    Component.translatable(newState
                             ? "copycatwheels.msg.camo_hint_on"
                             : "copycatwheels.msg.camo_hint_off"),
                     false);
         }
 
-        //Alt滚轮模式提示,
+        //
         if (!Screen.hasAltDown()) return;
         if (!copycatWheels$holdingDebugger(player)) return;
 

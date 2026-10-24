@@ -12,6 +12,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -134,7 +135,19 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
         return this.copycatWheels$material;
     }
 
-        @Unique
+    @Unique
+    private void copycatWheels$updateLight() {
+        final WheelMountBlockEntity self = (WheelMountBlockEntity) (Object) this;
+        if (self.getLevel() != null) {
+            AuxiliaryLightManager lm = self.getLevel().getAuxLightManager(self.getBlockPos());
+            if (lm != null) {
+                BlockState mat = this.copycatWheels$material;
+                lm.setLightAt(self.getBlockPos(), mat != null ? mat.getLightEmission(self.getLevel(), self.getBlockPos()) : 0);
+            }
+        }
+    }
+
+    @Unique
     private void copycatWheels$sync() {
         final WheelMountBlockEntity self = (WheelMountBlockEntity) (Object) this;
         self.setChanged();
@@ -144,8 +157,7 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
         if (self.getLevel() != null) {
             self.getLevel().sendBlockUpdated(
                     self.getBlockPos(), self.getBlockState(), self.getBlockState(), 3);
-
-            self.getLevel().getChunkSource().getLightEngine().checkBlock(self.getBlockPos());
+            copycatWheels$updateLight();
         }
     }
 
@@ -238,6 +250,8 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
             if (self.getLevel() != null) {
                 self.getLevel().sendBlockUpdated(
                         self.getBlockPos(), self.getBlockState(), self.getBlockState(), 3);
+          
+                copycatWheels$updateLight();
             }
         }
     }
