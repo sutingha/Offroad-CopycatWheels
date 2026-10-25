@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,10 +33,9 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
         this.skinModel = skinModel;
     }
 
-
     @Override
     public boolean useAmbientOcclusion() {
-        return super.useAmbientOcclusion(); 
+        return super.useAmbientOcclusion();
     }
 
     @Override
@@ -139,6 +137,7 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
                 materialModel = null;
             }
         }
+        final BakedModel finalMaterialModel = materialModel;
 
         final List<BakedQuad> skinQuads = new ArrayList<>(skinQuadsRaw.size());
         for (final BakedQuad q : skinQuadsRaw) {
@@ -147,7 +146,7 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
                     q.getTintIndex(),
                     q.getDirection(),
                     q.getSprite(),
-                    q.isShade())); 
+                    q.isShade()));
         }
 
         if (emissive) {
@@ -157,31 +156,47 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
         final List<BakedQuad> result = new ArrayList<>();
 
         for (final BakedQuad originalQuad : skinQuads) {
-            List<BakedQuad> candidates = null;
-            if (hasMaterial && materialModel != null) {
-                candidates = materialModel.getQuads(
-                        material, originalQuad.getDirection(), rand, ModelData.EMPTY, renderType);
-                if (candidates.isEmpty()) {
-                    candidates = materialModel.getQuads(
-                            material, null, rand, ModelData.EMPTY, renderType);
-                }
+            BakedQuad rotated = originalQuad;
+            if (quarter != 0) {
+                rotated = copycatWheels$rotateQuadY(rotated, quarter);
             }
 
-            if (candidates != null && !candidates.isEmpty()) {
+            final List<BakedQuad> candidates = (hasMaterial && finalMaterialModel != null)
+                    ? copycatWheels$findMaterialQuads(
+                            finalMaterialModel, material, rotated.getDirection(), rand, renderType)
+                    : List.of();
+
+            if (!candidates.isEmpty()) {
                 for (final BakedQuad candidate : candidates) {
-                    BakedQuad processed = copycatWheels$replaceSpriteAndTint(
-                            originalQuad, candidate.getSprite(), candidate.getTintIndex());
-                    if (quarter != 0) processed = copycatWheels$rotateQuadY(processed, quarter);
-                    result.add(processed);
+                    result.add(copycatWheels$cropSkinUv(rotated, candidate));
                 }
             } else {
-                BakedQuad processed = originalQuad;
-                if (quarter != 0) processed = copycatWheels$rotateQuadY(processed, quarter);
-                result.add(processed);
+                result.add(rotated);
             }
         }
 
         return result;
+    }
+
+    private static List<BakedQuad> copycatWheels$findMaterialQuads(
+            final BakedModel materialModel,
+            final BlockState material,
+            final Direction dir,
+            final RandomSource rand,
+            @Nullable final RenderType renderType
+    ) {
+        if (renderType != null) {
+            final List<BakedQuad> quads = materialModel.getQuads(material, dir, rand, ModelData.EMPTY, renderType);
+            if (!quads.isEmpty()) return quads;
+        }
+        final List<BakedQuad> quads = materialModel.getQuads(material, dir, rand, ModelData.EMPTY, null);
+        if (!quads.isEmpty()) return quads;
+        final List<BakedQuad> all = materialModel.getQuads(material, null, rand, ModelData.EMPTY, renderType);
+        final List<BakedQuad> filtered = new ArrayList<>();
+        for (final BakedQuad q : all) {
+            if (q.getDirection() == dir) filtered.add(q);
+        }
+        return filtered;
     }
 
     private static int copycatWheels$yQuarter(@Nullable final BlockState state) {
@@ -197,34 +212,81 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
         };
     }
 
-    private static BakedQuad copycatWheels$replaceSpriteAndTint(
-            final BakedQuad quad, final TextureAtlasSprite newSprite, final int newTintIndex) {
+    private static BakedQuad copycatWheels$cropSkinUv(
+            final BakedQuad skinQuad,
+            final BakedQuad materialQuad
+    ) {
+        final int[] skinVerts = skinQuad.getVertices().clone();
+        final int[] matVerts = materialQuad.getVertices();
 
-        final int[] vertices = quad.getVertices().clone();
-        final TextureAtlasSprite oldSprite = quad.getSprite();
-        final float oldU0 = oldSprite.getU0();
-        final float oldV0 = oldSprite.getV0();
-        final float oldUSize = oldSprite.getU1() - oldU0;
-        final float oldVSize = oldSprite.getV1() - oldV0;
+        final float[] mPx = new float[4], mPy = new float[4], mPz = new float[4];
+        final float[] mU = new float[4], mV = new float[4];
+        for (int i = 0; i < 4; i++) {
+            final int base = i * 8;
+            mPx[i] = Float.intBitsToFloat(matVerts[base]);
+            mPy[i] = Float.intBitsToFloat(matVerts[base + 1]);
+            mPz[i] = Float.intBitsToFloat(matVerts[base + 2]);
+            mU[i] = Float.intBitsToFloat(matVerts[base + 4]);
+            mV[i] = Float.intBitsToFloat(matVerts[base + 5]);
+        }
 
-        if (oldUSize <= 0.0F || oldVSize <= 0.0F) return quad;
+        final Direction dir = materialQuad.getDirection();
+        final Axis axisH;
+        final Axis axisV;
+        switch (dir.getAxis()) {
+            case X -> { axisH = Axis.Z; axisV = Axis.Y; }
+            case Y -> { axisH = Axis.X; axisV = Axis.Z; }
+            default -> { axisH = Axis.X; axisV = Axis.Y; }
+        }
 
-        final float newU0 = newSprite.getU0();
-        final float newV0 = newSprite.getV0();
-        final float newUSize = newSprite.getU1() - newU0;
-        final float newVSize = newSprite.getV1() - newV0;
+        final float e1H = (float) axisH.choose(mPx[1] - mPx[0], mPy[1] - mPy[0], mPz[1] - mPz[0]);
+        final float e1V = (float) axisV.choose(mPx[1] - mPx[0], mPy[1] - mPy[0], mPz[1] - mPz[0]);
+        final float e2H = (float) axisH.choose(mPx[3] - mPx[0], mPy[3] - mPy[0], mPz[3] - mPz[0]);
+        final float e2V = (float) axisV.choose(mPx[3] - mPx[0], mPy[3] - mPy[0], mPz[3] - mPz[0]);
+
+        final float det = e1H * e2V - e1V * e2H;
+        if (Math.abs(det) < 1e-8f) {
+            return new BakedQuad(
+                    skinVerts,
+                    materialQuad.getTintIndex(),
+                    skinQuad.getDirection(),
+                    materialQuad.getSprite(),
+                    skinQuad.isShade()
+            );
+        }
 
         for (int i = 0; i < 4; i++) {
             final int base = i * 8;
-            final float u = Float.intBitsToFloat(vertices[base + 4]);
-            final float v = Float.intBitsToFloat(vertices[base + 5]);
-            final float relU = (u - oldU0) / oldUSize;
-            final float relV = (v - oldV0) / oldVSize;
-            vertices[base + 4] = Float.floatToRawIntBits(newU0 + relU * newUSize);
-            vertices[base + 5] = Float.floatToRawIntBits(newV0 + relV * newVSize);
+            final float sx = Float.intBitsToFloat(skinVerts[base]);
+            final float sy = Float.intBitsToFloat(skinVerts[base + 1]);
+            final float sz = Float.intBitsToFloat(skinVerts[base + 2]);
+
+            final float dH = (float) axisH.choose(sx - mPx[0], sy - mPy[0], sz - mPz[0]);
+            final float dV = (float) axisV.choose(sx - mPx[0], sy - mPy[0], sz - mPz[0]);
+
+            final float s = (dH * e2V - dV * e2H) / det;
+            final float t = (e1H * dV - e1V * dH) / det;
+
+            final float u = (1 - s) * (1 - t) * mU[0]
+                    + s * (1 - t) * mU[1]
+                    + s * t * mU[2]
+                    + (1 - s) * t * mU[3];
+            final float v = (1 - s) * (1 - t) * mV[0]
+                    + s * (1 - t) * mV[1]
+                    + s * t * mV[2]
+                    + (1 - s) * t * mV[3];
+
+            skinVerts[base + 4] = Float.floatToRawIntBits(u);
+            skinVerts[base + 5] = Float.floatToRawIntBits(v);
         }
 
-        return new BakedQuad(vertices, newTintIndex, quad.getDirection(), newSprite, quad.isShade());
+        return new BakedQuad(
+                skinVerts,
+                materialQuad.getTintIndex(),
+                skinQuad.getDirection(),
+                materialQuad.getSprite(),
+                materialQuad.isShade()
+        );
     }
 
     private static BakedQuad copycatWheels$rotateQuadY(final BakedQuad quad, final int quarter) {
@@ -237,14 +299,14 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
 
         for (int i = 0; i < 4; i++) {
             final int base = i * 8;
-            
+
             final float x = Float.intBitsToFloat(vertices[base]) - 0.5F;
             final float z = Float.intBitsToFloat(vertices[base + 2]) - 0.5F;
             final float nx = x * cos - z * sin;
             final float nz = x * sin + z * cos;
             vertices[base] = Float.floatToRawIntBits(nx + 0.5F);
             vertices[base + 2] = Float.floatToRawIntBits(nz + 0.5F);
-            
+
             if (vertices.length >= (i + 1) * 8) {
                 final int normal = vertices[base + 7];
                 final float normX = (byte) (normal & 0xFF) / 127.0F;

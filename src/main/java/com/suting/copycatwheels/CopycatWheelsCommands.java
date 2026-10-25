@@ -55,7 +55,6 @@ public class CopycatWheelsCommands {
                                 double value = DoubleArgumentType.getDouble(context, "value");
                                 CopycatConfig.ROLL.set(value);
                                 //CopycatConfig.SPEC.save();
-                                CopycatConfig.SERVER_SPEC.save();
                                 context.getSource().sendSuccess(
                                     () -> Component.literal("Roll updated to " + value), false);
                                 return 1;
@@ -125,16 +124,8 @@ public class CopycatWheelsCommands {
         if (adv != null) {
             player.getAdvancements().award(adv, "0");
         } else {
-            //仅供调试报错
-            //CopycatWheelsMod.LOGGER.warn("[CW-ADV] advancement {} not found", GUNMU_ADVANCEMENT);
+            CopycatWheelsMod.LOGGER.warn("[CW-ADV] advancement {} not found", GUNMU_ADVANCEMENT);
         }
-    }
-
-    /**
-    CopycatConfig.HIDE_ACTION_MESSAGES来决定是否隐藏**/ 
-    private static void copycatWheels$msg(final ServerPlayer player, final Component message) {
-        if (CopycatConfig.HIDE_ACTION_MESSAGES.get()) return;
-        player.displayClientMessage(message, true);
     }
 
     private static int copycatWheels$runDebug(
@@ -149,11 +140,11 @@ public class CopycatWheelsCommands {
         if (!(level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount)) return 0;
         if (!(mount instanceof final CopycatWheelAccess access)) return 0;
 
-        //拆除
+        // 模式 0：拆除
         if (mode == 0) {
             if (access.copycatWheels$getCopycatBlock() == null) {
-                copycatWheels$msg(player,
-                        Component.translatable("copycatwheels.msg.no_copycat"));
+                player.displayClientMessage(
+                        Component.translatable("copycatwheels.msg.no_copycat"), true);
                 return 1;
             }
             CopycatBlockDrops.dropCopycatBlock(level, pos, access.copycatWheels$getCopycatBlock(), player);
@@ -164,12 +155,12 @@ public class CopycatWheelsCommands {
             access.copycatWheels$setCopycatOffset(0f, 0f, 0f);
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.0f);
-            copycatWheels$msg(player,
-                    Component.translatable("copycatwheels.msg.removed"));
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.removed"), true);
             return 1;
         }
 
-        //模式6：重置
+        // 模式 6：重置
         if (mode == 6) {
             access.copycatWheels$setCopycatRotation(null);
             access.copycatWheels$setCopycatScale(1.0f);
@@ -199,19 +190,19 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.5f);
-            copycatWheels$msg(player,
-                    Component.translatable("copycatwheels.msg.reset"));
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.reset"), true);
             return 1;
         }
 
-        //其余模式需要轮架上有伪装模型
+        // 其余模式需要伪装
         if (access.copycatWheels$getCopycatBlock() == null) {
-            copycatWheels$msg(player,
-                    Component.translatable("copycatwheels.msg.no_copycat"));
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.no_copycat"), true);
             return 1;
         }
 
-        //旋转
+        // 模式 1：旋转
         if (mode == 1) {
             final Direction hitFace = Direction.byName(faceStr);
             if (hitFace == null) return 0;
@@ -246,12 +237,12 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.0f);
-            copycatWheels$msg(player,
-                    Component.translatable("copycatwheels.msg.rotated"));
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.rotated"), true);
             return 1;
         }
 
-        //缩放（是伪装模型的，与碰撞无关）
+        // 模式 2：模型缩放
         if (mode == 2) {
             final float cur = access.copycatWheels$getCopycatScale();
             final float next = Mth.clamp(cur + delta, 0.1f, 10.0f);
@@ -259,13 +250,13 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, next);
-            copycatWheels$msg(player,
+            player.displayClientMessage(
                     Component.translatable("copycatwheels.msg.model_scale",
-                            String.format("%.2f", next)));
+                            String.format("%.2f", next)), true);
             return 1;
         }
 
-        //模式3碰撞半径
+        // 模式 3：轮胎碰撞半径
         if (mode == 3) {
             final ItemStack stack = mount.getHeldItem();
             final TireLike old = stack.get(OffroadDataComponents.TIRE);
@@ -288,13 +279,13 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, newRadius * 2f);
-            copycatWheels$msg(player,
+            player.displayClientMessage(
                     Component.translatable("copycatwheels.msg.tire_radius",
-                            String.format("%.3f", newRadius)));
+                            String.format("%.3f", newRadius)), true);
             return 1;
         }
 
-        //模式4：摩擦力倍率
+        // 模式 4：摩擦力倍率
         if (mode == 4) {
             final float cur = access.copycatWheels$getFrictionMultiplier();
             final float next = Mth.clamp(cur + delta, 0.0f, 2.0f);
@@ -302,13 +293,13 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, 1.0f + next);
-            copycatWheels$msg(player,
+            player.displayClientMessage(
                     Component.translatable("copycatwheels.msg.friction",
-                            String.format("%.2f", next)));
+                            String.format("%.2f", next)), true);
             return 1;
         }
 
-        //模式5位置
+        // 模式 5：位置偏移
         if (mode == 5) {
             final Direction hitFace = Direction.byName(faceStr);
             if (hitFace == null) return 0;
@@ -325,11 +316,11 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, 1.0f);
-            copycatWheels$msg(player,
+            player.displayClientMessage(
                     Component.translatable("copycatwheels.msg.offset",
                             String.format("%.2f", nx),
                             String.format("%.2f", ny),
-                            String.format("%.2f", nz)));
+                            String.format("%.2f", nz)), true);
             return 1;
         }
 
