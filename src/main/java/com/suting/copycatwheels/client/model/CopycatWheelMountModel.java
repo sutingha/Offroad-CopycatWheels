@@ -1,7 +1,7 @@
 package com.suting.copycatwheels.client.model;
 
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
-import com.suting.copycatwheels.CopycatWheelAccess;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;

@@ -1,9 +1,9 @@
-package com.suting.copycatwheels.client;
+package com.suting.copycatwheels.event;
 
-import com.suting.copycatwheels.CopycatConfig;
-import com.suting.copycatwheels.CopycatItems;
-import com.suting.copycatwheels.CopycatRenderState;
 import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.client.CopycatKeys;
+import com.suting.copycatwheels.core.CopycatRenderState;
+import com.suting.copycatwheels.registry.CopycatItems;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -32,23 +32,15 @@ public class CopycatClientInputEvents {
         final Player player = mc.player;
         if (player == null) return;
 
-        //
         while (CopycatKeys.CAMO_HINT_TOGGLE.consumeClick()) {
-            final boolean newState = !CopycatRenderState.camoHintEnabled;
-            CopycatRenderState.camoHintEnabled = newState;
-
-            //写入配置并保存
-            CopycatConfig.SHOW_CAMO_HINT.set(newState);
-            CopycatConfig.CLIENT_SPEC.save();
-
+            CopycatRenderState.camoHintEnabled = !CopycatRenderState.camoHintEnabled;
             player.displayClientMessage(
-                    Component.translatable(newState
+                    Component.translatable(CopycatRenderState.camoHintEnabled
                             ? "copycatwheels.msg.camo_hint_on"
                             : "copycatwheels.msg.camo_hint_off"),
                     false);
         }
 
-        //
         if (!Screen.hasAltDown()) return;
         if (!copycatWheels$holdingDebugger(player)) return;
 
@@ -65,7 +57,7 @@ public class CopycatClientInputEvents {
         mc.gui.setOverlayMessage(
                 Component.translatable(modeKey)
                         .copy()
-                        .append(Component.translatable("copycatwheels.mode.scroll_hint")),
+                        .append(Component.literal(" §8[§7滚轮切换§8]")),
                 false);
     }
 

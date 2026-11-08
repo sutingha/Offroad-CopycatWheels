@@ -1,7 +1,7 @@
 package com.suting.copycatwheels.mixin;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.suting.copycatwheels.CopycatWheelAccess;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

@@ -1,4 +1,4 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.registry;
 
 import com.tterrag.registrate.util.entry.ItemEntry;
 

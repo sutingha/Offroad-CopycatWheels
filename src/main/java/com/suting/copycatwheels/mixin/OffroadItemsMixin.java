@@ -1,7 +1,7 @@
 package com.suting.copycatwheels.mixin;
 
-import com.suting.copycatwheels.CopycatItems;
-import com.suting.copycatwheels.CopycatWheelsBlocks;
+import com.suting.copycatwheels.registry.CopycatItems;
+import com.suting.copycatwheels.registry.CopycatWheelsBlocks;
 import dev.ryanhcode.offroad.Offroad;
 import dev.ryanhcode.offroad.content.components.TireLike;
 import dev.ryanhcode.offroad.content.items.tire.TireItem;

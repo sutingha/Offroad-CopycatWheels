@@ -1,8 +1,8 @@
 package com.suting.copycatwheels.client;
 
-import com.suting.copycatwheels.CopycatWheelAccess;
-import com.suting.copycatwheels.CopycatWheelsBlocks;
 import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
+import com.suting.copycatwheels.registry.CopycatWheelsBlocks;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.block.BlockColor;

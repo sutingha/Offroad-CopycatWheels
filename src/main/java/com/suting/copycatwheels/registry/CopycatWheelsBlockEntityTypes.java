@@ -1,5 +1,6 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.registry;
 
+import com.suting.copycatwheels.CopycatWheelsMod;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;

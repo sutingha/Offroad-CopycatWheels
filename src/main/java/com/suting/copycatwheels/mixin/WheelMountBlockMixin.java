@@ -1,8 +1,8 @@
 package com.suting.copycatwheels.mixin;
 
-import com.suting.copycatwheels.CopycatBlockDrops;
-import com.suting.copycatwheels.CopycatConfig;
-import com.suting.copycatwheels.CopycatWheelAccess;
+import com.suting.copycatwheels.core.CopycatBlockDrops;
+import com.suting.copycatwheels.core.CopycatRenderState;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlock;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import dev.ryanhcode.offroad.content.components.TireLike;
@@ -28,7 +28,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.suting.copycatwheels.CopycatRenderState;
 
 @Mixin(WheelMountBlock.class)
 public class WheelMountBlockMixin {

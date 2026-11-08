@@ -3,6 +3,9 @@ package com.suting.copycatwheels;
 import com.suting.copycatwheels.client.CopycatKeys;
 import com.suting.copycatwheels.client.CopycatWheelsClientColors;
 import com.suting.copycatwheels.client.CopycatWheelsModelRegistration;
+import com.suting.copycatwheels.core.CopycatConfig;
+import com.suting.copycatwheels.core.CopycatRenderState;
+import com.suting.copycatwheels.registry.CopycatWheelsBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -31,14 +34,12 @@ public class CopycatWheelsModClient {
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
-        CopycatWheelsMod.LOGGER.info("Copycat Wheels: client setup");
-
         CopycatRenderState.camoHintEnabled = CopycatConfig.SHOW_CAMO_HINT.get();
 
         event.enqueueWork(() -> {
             ItemBlockRenderTypes.setRenderLayer(
                     CopycatWheelsBlocks.COPYCAT_WHEEL_MOUNT.get(),
-                    RenderType.translucent()  // ★ 改回 translucent
+                    RenderType.translucent()
             );
             CopycatWheelsClientColors.register();
         });

@@ -1,4 +1,4 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.core;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;

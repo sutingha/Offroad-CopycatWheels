@@ -54,6 +54,6 @@ public final class CopycatWheelsModelRegistration {
             count++;
         }
 
-        //CopycatWheelsMod.LOGGER.info("[CW-REG] registered {} override models + skeleton/skin", count);
+        CopycatWheelsMod.LOGGER.info("[CW-REG] registered {} override models + skeleton/skin", count);
     }
 }

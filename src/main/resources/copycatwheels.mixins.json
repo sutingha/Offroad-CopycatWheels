@@ -5,14 +5,14 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "copycatwheels.refmap.json",
   "mixins": [
-    "AdjustableWheelMountRendererMixin",
     "OffroadItemsMixin",
     "WheelMountBlockMixin",
     "WheelMountBlockEntityMixin",
     "WheelMountBlockEntityFrictionMixin",
     "WheelMountBlockEntitySmoothingMixin",
     "WheelMountInventoryMixin",
-    "WheelMountRendererMixin"
+    "WheelMountRendererMixin",
+    "AdjustableWheelMountRendererMixin"
   ],
   "client": [],
   "injectors": {

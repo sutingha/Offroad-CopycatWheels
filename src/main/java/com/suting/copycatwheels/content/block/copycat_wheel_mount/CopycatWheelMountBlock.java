@@ -1,6 +1,9 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.content.block.copycat_wheel_mount;
 
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
+import com.suting.copycatwheels.core.CopycatRenderState;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
+import com.suting.copycatwheels.registry.CopycatWheelsBlockEntityTypes;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlock;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -108,7 +111,6 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
             }
 
             final BlockState existing = access.copycatWheels$getMaterial();
-
 
             if (existing != null && !existing.isAir()) {
                 if (existing.is(blockItem.getBlock())) {

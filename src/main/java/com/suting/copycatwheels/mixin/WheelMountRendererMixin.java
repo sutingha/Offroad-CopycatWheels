@@ -2,7 +2,7 @@ package com.suting.copycatwheels.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.suting.copycatwheels.CopycatWheelAccess;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountRenderer;

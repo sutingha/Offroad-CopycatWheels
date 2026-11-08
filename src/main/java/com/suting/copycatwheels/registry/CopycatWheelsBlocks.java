@@ -1,5 +1,7 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.registry;
 
+import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.content.block.copycat_wheel_mount.CopycatWheelMountBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -8,8 +10,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class CopycatWheelsBlocks {
-    public static final DeferredRegister.Blocks BLOCKS =
-            DeferredRegister.createBlocks(CopycatWheelsMod.MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(CopycatWheelsMod.MODID);
 
     public static final DeferredBlock<CopycatWheelMountBlock> COPYCAT_WHEEL_MOUNT =
             BLOCKS.register("copycat_wheel_mount",

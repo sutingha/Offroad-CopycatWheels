@@ -18,6 +18,8 @@
   "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour5": "_Brakes_ the attached wheel, _increasing friction_.",
   "block.copycatwheels.copycat_wheel_mount.tooltip.condition6": "When Powered From Side",
   "block.copycatwheels.copycat_wheel_mount.tooltip.behaviour6": "_Steers_ the wheel toward the _side the signal is from_.",
+  "block.copycatwheels.copycat_wheel_mount_ii.tooltip.summary": "A _dual-wheel_ mount with _left/right independent_ tires and copycat disguises.\nDisguise the _mount_ on the top/rotation side faces, and each _wheel_ on its own left/right face.",
+  "block.copycatwheels.copycat_wheel_mount_ii.tooltip.condition1": "When R-Clicked with a block on the top/rotation side face",
 
   "item.offroad.copycat_wheel.tooltip.summary": "A _model tire_ that disguises itself as any block.",
   "item.offroad.copycat_wheel.tooltip.condition1": "When R-Clicked on a wheel mount",
@@ -72,5 +74,22 @@
   "copycatwheels.configuration.hideActionMessages": "Hide Action Messages",
   "copycatwheels.configuration.hideActionMessages.tooltip": "Hides action messages above the hotbar",
   "copycatwheels.configuration.showCamoHint": "Show Copycat Hint",
-  "copycatwheels.configuration.showCamoHint.tooltip": "Shows the material name when applying a copycat block. Can be toggled with a keybind."
+  "copycatwheels.configuration.showCamoHint.tooltip": "Shows the material name when applying a copycat block. Can be toggled with a keybind.",
+  
+  "copycatwheels.scroll_option.suspension_strength": "Suspension Strength",
+  "copycatwheels.scroll_option.suspension_strength_label": "Suspension Strength",
+  "copycatwheels.msg.slot_occupied": "§cThis side already has a wheel.",
+  "copycatwheels.msg.no_wheel": "§7This side has no wheel installed.",
+  "copycatwheels.msg.need_wheel_first": "§cInstall a wheel on this side first.",
+  "block.copycatwheels.copycat_wheel_mount_ii": "Copycat Wheel Mount II",
+  "item.offroad.copycat_wheel_mount_ii": "Copycat Wheel Mount II",
+  "copycatwheels.msg.click_wheel_face": "§cClick the left or right wheel face to operate.",
+  "copycatwheels.msg.click_wheel_face": "§cClick the left or right wheel face to operate.",
+  "copycatwheels.msg.invalid_face": "§cInvalid face: %s",
+  "copycatwheels.msg.slot_occupied": "§cThis side already has a wheel.",
+  "copycatwheels.msg.no_wheel": "§7This side has no wheel installed.",
+  "copycatwheels.msg.need_wheel_first": "§cInstall a wheel on this side first.",
+  "copycatwheels.msg.not_copycat_wheel": "§cThis wheel is not a Copycat Wheel, cannot apply disguise.",
+  "copycatwheels.scroll_option.suspension_strength": "Suspension Strength",
+  "copycatwheels.scroll_option.suspension_strength_label": "Suspension Strength"
 }

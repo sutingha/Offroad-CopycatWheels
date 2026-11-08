@@ -1,4 +1,4 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.core;
 
 public class CopycatRenderState {
     public static boolean renderBaseChannel = true;

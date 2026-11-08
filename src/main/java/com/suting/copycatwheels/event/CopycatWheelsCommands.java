@@ -1,4 +1,4 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.event;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -7,6 +7,12 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.core.CopycatBlockDrops;
+import com.suting.copycatwheels.core.CopycatConfig;
+import com.suting.copycatwheels.core.CopycatRenderState;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
+import com.suting.copycatwheels.registry.CopycatItems;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlock;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountInventory;
@@ -36,7 +42,6 @@ public class CopycatWheelsCommands {
             ResourceLocation.fromNamespaceAndPath("copycatwheels", "gunmu");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-
         dispatcher.register(Commands.literal("copycat")
             .requires(source -> source.hasPermission(2))
             .then(Commands.literal("config")
@@ -54,7 +59,6 @@ public class CopycatWheelsCommands {
                             .executes(context -> {
                                 double value = DoubleArgumentType.getDouble(context, "value");
                                 CopycatConfig.ROLL.set(value);
-                                //CopycatConfig.SPEC.save();
                                 context.getSource().sendSuccess(
                                     () -> Component.literal("Roll updated to " + value), false);
                                 return 1;
@@ -140,11 +144,9 @@ public class CopycatWheelsCommands {
         if (!(level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount)) return 0;
         if (!(mount instanceof final CopycatWheelAccess access)) return 0;
 
-        // 模式 0：拆除
         if (mode == 0) {
             if (access.copycatWheels$getCopycatBlock() == null) {
-                player.displayClientMessage(
-                        Component.translatable("copycatwheels.msg.no_copycat"), true);
+                player.displayClientMessage(Component.translatable("copycatwheels.msg.no_copycat"), true);
                 return 1;
             }
             CopycatBlockDrops.dropCopycatBlock(level, pos, access.copycatWheels$getCopycatBlock(), player);
@@ -155,12 +157,10 @@ public class CopycatWheelsCommands {
             access.copycatWheels$setCopycatOffset(0f, 0f, 0f);
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.0f);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.removed"), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.removed"), true);
             return 1;
         }
 
-        // 模式 6：重置
         if (mode == 6) {
             access.copycatWheels$setCopycatRotation(null);
             access.copycatWheels$setCopycatScale(1.0f);
@@ -190,19 +190,15 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.5f);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.reset"), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.reset"), true);
             return 1;
         }
 
-        // 其余模式需要伪装
         if (access.copycatWheels$getCopycatBlock() == null) {
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.no_copycat"), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.no_copycat"), true);
             return 1;
         }
 
-        // 模式 1：旋转
         if (mode == 1) {
             final Direction hitFace = Direction.byName(faceStr);
             if (hitFace == null) return 0;
@@ -232,17 +228,14 @@ public class CopycatWheelsCommands {
 
             q0.premul(qDelta);
 
-            access.copycatWheels$setCopycatRotation(
-                    new float[]{q0.x(), q0.y(), q0.z(), q0.w()});
+            access.copycatWheels$setCopycatRotation(new float[]{q0.x(), q0.y(), q0.z(), q0.w()});
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.0f);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.rotated"), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.rotated"), true);
             return 1;
         }
 
-        // 模式 2：模型缩放
         if (mode == 2) {
             final float cur = access.copycatWheels$getCopycatScale();
             final float next = Mth.clamp(cur + delta, 0.1f, 10.0f);
@@ -250,13 +243,11 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, next);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.model_scale",
-                            String.format("%.2f", next)), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.model_scale",
+                    String.format("%.2f", next)), true);
             return 1;
         }
 
-        // 模式 3：轮胎碰撞半径
         if (mode == 3) {
             final ItemStack stack = mount.getHeldItem();
             final TireLike old = stack.get(OffroadDataComponents.TIRE);
@@ -279,13 +270,11 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, newRadius * 2f);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.tire_radius",
-                            String.format("%.3f", newRadius)), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.tire_radius",
+                    String.format("%.3f", newRadius)), true);
             return 1;
         }
 
-        // 模式 4：摩擦力倍率
         if (mode == 4) {
             final float cur = access.copycatWheels$getFrictionMultiplier();
             final float next = Mth.clamp(cur + delta, 0.0f, 2.0f);
@@ -293,13 +282,11 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, 1.0f + next);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.friction",
-                            String.format("%.2f", next)), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.friction",
+                    String.format("%.2f", next)), true);
             return 1;
         }
 
-        // 模式 5：位置偏移
         if (mode == 5) {
             final Direction hitFace = Direction.byName(faceStr);
             if (hitFace == null) return 0;
@@ -316,11 +303,10 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, 1.0f);
-            player.displayClientMessage(
-                    Component.translatable("copycatwheels.msg.offset",
-                            String.format("%.2f", nx),
-                            String.format("%.2f", ny),
-                            String.format("%.2f", nz)), true);
+            player.displayClientMessage(Component.translatable("copycatwheels.msg.offset",
+                    String.format("%.2f", nx),
+                    String.format("%.2f", ny),
+                    String.format("%.2f", nz)), true);
             return 1;
         }
 

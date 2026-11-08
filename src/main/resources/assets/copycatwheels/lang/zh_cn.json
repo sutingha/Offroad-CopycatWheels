@@ -3,7 +3,8 @@
   "item.offroad.copycat_remover": "伪装轮调试器",
   "copycatwheels.simulated_section.copycat_wheels": "伪装轮",
   "block.copycatwheels.copycat_wheel_mount": "伪装车轮悬架",
-  "item.offroad.copycat_tire": "材质伪装轮",
+  "block.copycatwheels.copycat_wheel_mount_ii": "伪装车轮悬架II号",
+  "item.offroad.copycat_wheel_mount_ii": "伪装车轮悬架II号",
 
   "block.copycatwheels.copycat_wheel_mount.tooltip.summary": "承载_模型伪装轮_，以在地面上行驶。\n其外观可被伪装成_任意完整方块_。",
   "block.copycatwheels.copycat_wheel_mount.tooltip.condition1": "手持方块右击侧面时",
@@ -71,5 +72,21 @@
   "copycatwheels.configuration.hideActionMessages": "隐藏操作提示",
   "copycatwheels.configuration.hideActionMessages.tooltip": "是否隐藏快捷栏上方的操作提示消息",
   "copycatwheels.configuration.showCamoHint": "显示伪装提示",
-  "copycatwheels.configuration.showCamoHint.tooltip": "伪装方块时是否在快捷栏上方显示材质名称（可在按键控制中设置快捷键切换）"
+  "copycatwheels.configuration.showCamoHint.tooltip": "伪装方块时是否在快捷栏上方显示材质名称（可在按键控制中设置快捷键切换）",
+
+  "copycatwheels.scroll_option.suspension_strength": "悬挂强度",
+  "copycatwheels.scroll_option.suspension_strength_label": "悬挂强度",
+  "copycatwheels.msg.slot_occupied": "§c该侧已经安装了轮子。",
+  "copycatwheels.msg.no_wheel": "§7该侧没有安装轮子。",
+  "copycatwheels.msg.need_wheel_first": "§c请先在该侧安装一个轮子。",
+  "block.copycatwheels.copycat_wheel_mount_ii.tooltip.summary": "带有_左右独立_轮胎和伪装的_双轮悬架_。\n在_顶面/旋转接侧面_伪装支架，在_左右轮胎面_分别伪装对应轮子。",
+  "copycatwheels.msg.click_wheel_face": "§c请点击左/右轮子面来操作",
+  "copycatwheels.msg.click_wheel_face": "§c请点击左/右轮子面来操作",
+  "copycatwheels.msg.invalid_face": "§c无效的面: %s",
+  "copycatwheels.msg.slot_occupied": "§c该侧已经安装了轮子。",
+  "copycatwheels.msg.no_wheel": "§7该侧没有安装轮子。",
+  "copycatwheels.msg.need_wheel_first": "§c请先在该侧安装一个轮子。",
+  "copycatwheels.msg.not_copycat_wheel": "§c这不是伪装轮，无法安装伪装。",
+  "copycatwheels.scroll_option.suspension_strength": "悬挂强度",
+  "copycatwheels.scroll_option.suspension_strength_label": "悬挂强度"
 }

@@ -1,4 +1,4 @@
-package com.suting.copycatwheels;
+package com.suting.copycatwheels.core;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;

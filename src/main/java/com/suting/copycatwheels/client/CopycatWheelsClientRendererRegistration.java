@@ -1,7 +1,7 @@
 package com.suting.copycatwheels.client;
 
-import com.suting.copycatwheels.CopycatWheelsBlockEntityTypes;
 import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.registry.CopycatWheelsBlockEntityTypes;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

@@ -1,6 +1,10 @@
 package com.suting.copycatwheels;
 
 import com.mojang.logging.LogUtils;
+import com.suting.copycatwheels.core.CopycatConfig;
+import com.suting.copycatwheels.event.CopycatWheelsCommands;
+import com.suting.copycatwheels.registry.CopycatWheelsBlockEntityTypes;
+import com.suting.copycatwheels.registry.CopycatWheelsBlocks;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,7 +24,6 @@ public class CopycatWheelsMod {
     public static final String MODID = "copycatwheels";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 
     public static final DeferredItem<Item> GUNMU_ICON = ITEMS.register(
@@ -30,31 +33,28 @@ public class CopycatWheelsMod {
 
     public CopycatWheelsMod(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
-
         NeoForge.EVENT_BUS.register(this);
 
         ITEMS.register(modEventBus);
 
+
         CopycatWheelsBlocks.register(modEventBus);
         CopycatWheelsBlockEntityTypes.register(modEventBus);
 
-        //modContainer.registerConfig(ModConfig.Type.COMMON, CopycatConfig.SPEC);
-        modContainer.registerConfig(ModConfig.Type.SERVER, CopycatConfig.SERVER_SPEC);
-        modContainer.registerConfig(ModConfig.Type.CLIENT, CopycatConfig.CLIENT_SPEC);
-        
+        modContainer.registerConfig(ModConfig.Type.COMMON, CopycatConfig.SPEC);
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
     }
 
     void registerCommands(RegisterCommandsEvent event) {
         CopycatWheelsCommands.register(event.getDispatcher());
     }
-    //两个供客户端和服务端的提示函数
+
     private void commonSetup(FMLCommonSetupEvent event) {
-        //LOGGER.info("Copycat Wheels: common setup");
+        LOGGER.info("Copycat Wheels: common setup");
     }
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        //LOGGER.info("Copycat Wheels: server starting");
+        LOGGER.info("Copycat Wheels: server starting");
     }
 }

@@ -1,6 +1,6 @@
 package com.suting.copycatwheels.mixin;
 
-import com.suting.copycatwheels.CopycatWheelAccess;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
