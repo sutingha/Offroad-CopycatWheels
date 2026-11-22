@@ -1,8 +1,6 @@
 package com.suting.copycatwheels.core;
 
 public class CopycatRenderState {
-    public static boolean renderBaseChannel = true;
-    public static boolean renderOverrideChannel = true;
     public static boolean gunmuMode = false;
 
     //

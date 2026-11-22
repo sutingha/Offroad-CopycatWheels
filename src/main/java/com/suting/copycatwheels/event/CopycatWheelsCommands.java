@@ -8,6 +8,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.content.block.copycat_wheel_mount_ii.CopycatWheelMountIIBlockEntity;
+import com.suting.copycatwheels.content.block.copycat_wheel_mount_ii.CopycatWheelMountIIInventory;
 import com.suting.copycatwheels.core.CopycatBlockDrops;
 import com.suting.copycatwheels.core.CopycatConfig;
 import com.suting.copycatwheels.core.CopycatRenderState;
@@ -32,6 +34,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -42,6 +45,7 @@ public class CopycatWheelsCommands {
             ResourceLocation.fromNamespaceAndPath("copycatwheels", "gunmu");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+
         dispatcher.register(Commands.literal("copycat")
             .requires(source -> source.hasPermission(2))
             .then(Commands.literal("config")
@@ -85,26 +89,6 @@ public class CopycatWheelsCommands {
                                             StringArgumentType.getString(ctx, "face"),
                                             FloatArgumentType.getFloat(ctx, "delta")
                                         )))))))))
-            .then(Commands.literal("render")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("base")
-                    .then(Commands.argument("enabled", BoolArgumentType.bool())
-                        .executes(context -> {
-                            boolean enabled = BoolArgumentType.getBool(context, "enabled");
-                            CopycatRenderState.renderBaseChannel = enabled;
-                            context.getSource().sendSuccess(
-                                () -> Component.literal("Base channel: " + (enabled ? "ON" : "OFF")), false);
-                            return 1;
-                        })))
-                .then(Commands.literal("override")
-                    .then(Commands.argument("enabled", BoolArgumentType.bool())
-                        .executes(context -> {
-                            boolean enabled = BoolArgumentType.getBool(context, "enabled");
-                            CopycatRenderState.renderOverrideChannel = enabled;
-                            context.getSource().sendSuccess(
-                                () -> Component.literal("Override channel: " + (enabled ? "ON" : "OFF")), false);
-                            return 1;
-                        }))))
             .then(Commands.literal("gunmu")
                 .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("enabled", BoolArgumentType.bool())
@@ -141,12 +125,14 @@ public class CopycatWheelsCommands {
         final ServerLevel level = player.serverLevel();
         final BlockPos pos = new BlockPos(x, y, z);
 
-        if (!(level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount)) return 0;
-        if (!(mount instanceof final CopycatWheelAccess access)) return 0;
+        final BlockEntity be = level.getBlockEntity(pos);
+        if (!(be instanceof final CopycatWheelAccess access)) return 0;
 
+        // 模式 0：拆除
         if (mode == 0) {
             if (access.copycatWheels$getCopycatBlock() == null) {
-                player.displayClientMessage(Component.translatable("copycatwheels.msg.no_copycat"), true);
+                player.displayClientMessage(
+                        Component.translatable("copycatwheels.msg.no_copycat"), true);
                 return 1;
             }
             CopycatBlockDrops.dropCopycatBlock(level, pos, access.copycatWheels$getCopycatBlock(), player);
@@ -157,53 +143,61 @@ public class CopycatWheelsCommands {
             access.copycatWheels$setCopycatOffset(0f, 0f, 0f);
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.0f);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.removed"), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.removed"), true);
             return 1;
         }
 
+        // 模式 6：重置
         if (mode == 6) {
             access.copycatWheels$setCopycatRotation(null);
             access.copycatWheels$setCopycatScale(1.0f);
             access.copycatWheels$setFrictionMultiplier(1.0f);
             access.copycatWheels$setCopycatOffset(0f, 0f, 0f);
 
-            final ItemStack stack = mount.getHeldItem();
-            final TireLike old = stack.get(OffroadDataComponents.TIRE);
-            if (old != null) {
-                final ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-                final float defaultRadius = copycatWheels$defaultRadiusFor(itemId);
-                if (Math.abs(old.radius() - defaultRadius) > 1e-4) {
-                    final TireLike restored = new TireLike(
-                            defaultRadius, old.rotation(), old.offset(), old.model().orElse(null));
-                    final ItemStack newStack = stack.copy();
-                    newStack.set(OffroadDataComponents.TIRE, restored);
+            if (be instanceof final WheelMountBlockEntity mount) {
+                final ItemStack stack = mount.getHeldItem();
+                final TireLike old = stack.get(OffroadDataComponents.TIRE);
+                if (old != null) {
+                    final ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                    final float defaultRadius = copycatWheels$defaultRadiusFor(itemId);
+                    if (Math.abs(old.radius() - defaultRadius) > 1e-4) {
+                        final TireLike restored = new TireLike(
+                                defaultRadius, old.rotation(), old.offset(), old.model().orElse(null), old.minimumFriction());
+                        final ItemStack newStack = stack.copy();
+                        newStack.set(OffroadDataComponents.TIRE, restored);
 
-                    final WheelMountInventory inv = (WheelMountInventory) mount.getInventory();
-                    final boolean oldSuppress = inv.suppressUpdate;
-                    inv.suppressUpdate = true;
-                    try { inv.slot.setStack(newStack); }
-                    finally { inv.suppressUpdate = oldSuppress; }
-                    mount.setChanged();
-                    mount.sendData();
+                        final WheelMountInventory inv = (WheelMountInventory) mount.getInventory();
+                        final boolean oldSuppress = inv.suppressUpdate;
+                        inv.suppressUpdate = true;
+                        try { inv.slot.setStack(newStack); }
+                        finally { inv.suppressUpdate = oldSuppress; }
+                        mount.setChanged();
+                        mount.sendData();
+                    }
                 }
             }
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.5f);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.reset"), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.reset"), true);
             return 1;
         }
 
+        // 其余模式需要伪装
         if (access.copycatWheels$getCopycatBlock() == null) {
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.no_copycat"), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.no_copycat"), true);
             return 1;
         }
 
+        // 模式 1：旋转
         if (mode == 1) {
             final Direction hitFace = Direction.byName(faceStr);
             if (hitFace == null) return 0;
 
-            final BlockState state = mount.getBlockState();
+            final BlockState state = be.getBlockState();
             final Direction facing = state.getValue(WheelMountBlock.HORIZONTAL_FACING);
             final Direction dir = facing.getOpposite();
             final float yRot = switch (dir) {
@@ -228,14 +222,17 @@ public class CopycatWheelsCommands {
 
             q0.premul(qDelta);
 
-            access.copycatWheels$setCopycatRotation(new float[]{q0.x(), q0.y(), q0.z(), q0.w()});
+            access.copycatWheels$setCopycatRotation(
+                    new float[]{q0.x(), q0.y(), q0.z(), q0.w()});
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.75f, 1.0f);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.rotated"), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.rotated"), true);
             return 1;
         }
 
+        // 模式 2：模型缩放（纯视觉，与碰撞半径无关）
         if (mode == 2) {
             final float cur = access.copycatWheels$getCopycatScale();
             final float next = Mth.clamp(cur + delta, 0.1f, 10.0f);
@@ -243,38 +240,79 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, next);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.model_scale",
-                    String.format("%.2f", next)), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.model_scale",
+                            String.format("%.2f", next)), true);
             return 1;
         }
 
+        // 模式 3：轮胎碰撞半径（I + II）—— 仅调 TireLike.radius，与 mode 2 视觉缩放解绑
         if (mode == 3) {
-            final ItemStack stack = mount.getHeldItem();
-            final TireLike old = stack.get(OffroadDataComponents.TIRE);
-            if (old == null) return 0;
+            if (be instanceof final WheelMountBlockEntity mount) {
+                final ItemStack stack = mount.getHeldItem();
+                final TireLike old = stack.get(OffroadDataComponents.TIRE);
+                if (old == null) return 0;
 
-            final float newRadius = Mth.clamp(old.radius() + delta, 0.05f, 5.0f);
-            final TireLike newTire = new TireLike(
-                    newRadius, old.rotation(), old.offset(), old.model().orElse(null));
+                final float newRadius = Mth.clamp(old.radius() + delta, 0.05f, 5.0f);
+                final TireLike newTire = new TireLike(
+                        newRadius, old.rotation(), old.offset(), old.model().orElse(null), old.minimumFriction());
 
-            final ItemStack newStack = stack.copy();
-            newStack.set(OffroadDataComponents.TIRE, newTire);
+                final ItemStack newStack = stack.copy();
+                newStack.set(OffroadDataComponents.TIRE, newTire);
 
-            final WheelMountInventory inv = (WheelMountInventory) mount.getInventory();
-            final boolean oldSuppress = inv.suppressUpdate;
-            inv.suppressUpdate = true;
-            try { inv.slot.setStack(newStack); }
-            finally { inv.suppressUpdate = oldSuppress; }
-            mount.setChanged();
-            mount.sendData();
+                final WheelMountInventory inv = (WheelMountInventory) mount.getInventory();
+                final boolean oldSuppress = inv.suppressUpdate;
+                inv.suppressUpdate = true;
+                try { inv.slot.setStack(newStack); }
+                finally { inv.suppressUpdate = oldSuppress; }
+                mount.setChanged();
+                mount.sendData();
 
-            level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
-                    SoundSource.PLAYERS, 0.6f, newRadius * 2f);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.tire_radius",
-                    String.format("%.3f", newRadius)), true);
-            return 1;
+                level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
+                        SoundSource.PLAYERS, 0.6f, newRadius * 2f);
+                player.displayClientMessage(
+                        Component.translatable("copycatwheels.msg.tire_radius",
+                                String.format("%.3f", newRadius)), true);
+                return 1;
+            } else if (be instanceof final CopycatWheelMountIIBlockEntity mount2) {
+                final CopycatWheelMountIIInventory inv = mount2.getInventory();
+                float newRadius = 0f;
+                boolean changed = false;
+
+                final boolean oldSuppress = inv.suppressUpdate;
+                inv.suppressUpdate = true;
+                try {
+                    for (int i = 0; i < 2; i++) {
+                        final ItemStack stack = inv.getItem(i);
+                        final TireLike old = stack.get(OffroadDataComponents.TIRE);
+                        if (old == null) continue;
+                        newRadius = Mth.clamp(old.radius() + delta, 0.05f, 5.0f);
+                        final TireLike newTire = new TireLike(
+                                newRadius, old.rotation(), old.offset(), old.model().orElse(null), old.minimumFriction());
+                        final ItemStack newStack = stack.copy();
+                        newStack.set(OffroadDataComponents.TIRE, newTire);
+                        inv.getSlot(i).setStack(newStack);
+                        changed = true;
+                    }
+                } finally {
+                    inv.suppressUpdate = oldSuppress;
+                }
+
+                if (!changed) return 0;
+                mount2.setChanged();
+                mount2.sendData();
+
+                level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
+                        SoundSource.PLAYERS, 0.6f, newRadius * 2f);
+                player.displayClientMessage(
+                        Component.translatable("copycatwheels.msg.tire_radius",
+                                String.format("%.3f", newRadius)), true);
+                return 1;
+            }
+            return 0;
         }
 
+        // 模式 4：摩擦力倍率
         if (mode == 4) {
             final float cur = access.copycatWheels$getFrictionMultiplier();
             final float next = Mth.clamp(cur + delta, 0.0f, 2.0f);
@@ -282,11 +320,13 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, 1.0f + next);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.friction",
-                    String.format("%.2f", next)), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.friction",
+                            String.format("%.2f", next)), true);
             return 1;
         }
 
+        // 模式 5：位置偏移
         if (mode == 5) {
             final Direction hitFace = Direction.byName(faceStr);
             if (hitFace == null) return 0;
@@ -303,10 +343,11 @@ public class CopycatWheelsCommands {
 
             level.playSound(null, pos, SoundEvents.ITEM_FRAME_ROTATE_ITEM,
                     SoundSource.PLAYERS, 0.6f, 1.0f);
-            player.displayClientMessage(Component.translatable("copycatwheels.msg.offset",
-                    String.format("%.2f", nx),
-                    String.format("%.2f", ny),
-                    String.format("%.2f", nz)), true);
+            player.displayClientMessage(
+                    Component.translatable("copycatwheels.msg.offset",
+                            String.format("%.2f", nx),
+                            String.format("%.2f", ny),
+                            String.format("%.2f", nz)), true);
             return 1;
         }
 
@@ -315,10 +356,13 @@ public class CopycatWheelsCommands {
 
     private static float copycatWheels$defaultRadiusFor(final ResourceLocation itemId) {
         if (itemId == null) return 1.0f;
-        if ("copycat_wheel".equals(itemId.getPath())) {
-            return TireLike.TIRE.radius();
-        }
-        return 1.0f;
+        return switch (itemId.getPath()) {
+            case "copycat_wheel_small" -> TireLike.SMALL_TIRE.radius();
+            case "copycat_wheel" -> TireLike.TIRE.radius();
+            case "copycat_wheel_large" -> TireLike.LARGE_TIRE.radius();
+            case "copycat_wheel_monstrous" -> TireLike.MONSTROUS_TIRE.radius();
+            default -> 1.0f;
+        };
     }
 
     private static boolean copycatWheels$holdingDebugger(final ServerPlayer player) {

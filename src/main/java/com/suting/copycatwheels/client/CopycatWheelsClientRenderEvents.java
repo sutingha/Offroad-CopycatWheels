@@ -1,12 +1,10 @@
 package com.suting.copycatwheels.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.suting.copycatwheels.core.CopycatRenderState;
 import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.core.CopycatRenderState;
 import com.suting.copycatwheels.core.CopycatWheelAccess;
-import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import dev.ryanhcode.offroad.content.components.TireLike;
 import dev.ryanhcode.offroad.index.OffroadDataComponents;
@@ -17,13 +15,10 @@ import dev.ryanhcode.sable.companion.math.Pose3dc;
 import dev.ryanhcode.sable.sublevel.ClientSubLevel;
 import dev.ryanhcode.sable.sublevel.SubLevel;
 import dev.ryanhcode.sable.sublevel.plot.LevelPlot;
-import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
@@ -31,6 +26,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
@@ -66,23 +62,15 @@ public class CopycatWheelsClientRenderEvents {
     private static Method copycatWheels$tracksLongitudinalMethod = null;
     private static Method copycatWheels$tracksHeightMethod = null;
 
-    private static final Map<ResourceLocation, Boolean> copycatWheels$overrideCache = new ConcurrentHashMap<>();
-
     private static final Map<ResourceLocation, BaseTransform> copycatWheels$baseTransforms = Map.of(
             ResourceLocation.fromNamespaceAndPath("create", "water_wheel"),
             new BaseTransform(Axis.XP, 90f, 0f, 0f, 0f),
+
             ResourceLocation.fromNamespaceAndPath("create", "large_water_wheel"),
             new BaseTransform(Axis.XP, 90f, 0f, 0f, 0f)
     );
 
     private record BaseTransform(Axis axis, float degrees, float tx, float ty, float tz) {}
-
-    private static final Map<ResourceLocation, ResourceLocation> copycatWheels$aliases = Map.of(
-            ResourceLocation.fromNamespaceAndPath("create", "copper_valve_handle"),
-            ResourceLocation.fromNamespaceAndPath("create", "valve_handle"),
-            ResourceLocation.fromNamespaceAndPath("create", "copper_water_wheel"),
-            ResourceLocation.fromNamespaceAndPath("create", "water_wheel")
-    );
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
@@ -178,41 +166,32 @@ public class CopycatWheelsClientRenderEvents {
 
         BaseTransform baseT = copycatWheels$baseTransforms.get(blockId);
 
-        if (CopycatRenderState.renderBaseChannel) {
-            ms.pushPose();
-            copycatWheels$applyWorldTransform(ms, pos, subLevelPose, camPos);
-            copycatWheels$applyOffset(ms, access);
-            copycatWheels$applyWheelMountPose(ms, mount, partialTick);
-            copycatWheels$applyUserRotation(ms, access);
-            copycatWheels$applyScale(ms, access);
+        ms.pushPose();
+        copycatWheels$applyWorldTransform(ms, pos, subLevelPose, camPos);
+        copycatWheels$applyOffset(ms, access);
+        copycatWheels$applyWheelMountPose(ms, mount, partialTick);
+        copycatWheels$applyUserRotation(ms, access);
+        copycatWheels$applyScale(ms, access);
 
-            if (baseT != null) {
-                ms.translate(baseT.tx(), baseT.ty(), baseT.tz());
-                if (baseT.axis() != null && baseT.degrees() != 0f) {
-                    ms.mulPose(baseT.axis().rotationDegrees(baseT.degrees()));
-                }
-            }
-
-            ms.translate(-0.5, -0.5, -0.5);
-            dispatcher.renderSingleBlock(blockState, ms, buffer, light, OverlayTexture.NO_OVERLAY);
-            ms.popPose();
-        }
-
-        if (CopycatRenderState.renderOverrideChannel) {
-            ResourceLocation override = copycatWheels$getOverrideModel(blockId);
-            if (override != null) {
-                ms.pushPose();
-                copycatWheels$applyWorldTransform(ms, pos, subLevelPose, camPos);
-                copycatWheels$applyOffset(ms, access);
-                copycatWheels$applyWheelMountPose(ms, mount, partialTick);
-                copycatWheels$applyUserRotation(ms, access);
-                copycatWheels$applyScale(ms, access);
-
-                ms.translate(-0.5, -0.5, -0.5);
-                copycatWheels$renderCustomModel(override, blockState, ms, buffer, light);
-                ms.popPose();
+        if (baseT != null) {
+            ms.translate(baseT.tx(), baseT.ty(), baseT.tz());
+            if (baseT.axis() != null && baseT.degrees() != 0f) {
+                ms.mulPose(baseT.axis().rotationDegrees(baseT.degrees()));
             }
         }
+
+        ItemStack blockItemStack = new ItemStack(blockState.getBlock());
+        Minecraft.getInstance().getItemRenderer().renderStatic(
+                blockItemStack,
+                ItemDisplayContext.NONE,
+                light,
+                OverlayTexture.NO_OVERLAY,
+                ms,
+                buffer,
+                level,
+                0
+        );
+        ms.popPose();
 
         return true;
     }
@@ -258,56 +237,6 @@ public class CopycatWheelsClientRenderEvents {
             ms.last().pose().mul(rot);
         } else {
             ms.translate(pos.getX() - camPos.x, pos.getY() - camPos.y, pos.getZ() - camPos.z);
-        }
-    }
-
-    private static ResourceLocation copycatWheels$getOverrideModel(ResourceLocation blockId) {
-        Boolean cached = copycatWheels$overrideCache.get(blockId);
-        if (cached != null) return cached ? copycatWheels$deriveOverridePath(blockId) : null;
-
-        final ResourceLocation direct = copycatWheels$deriveOverridePath(blockId);
-        if (copycatWheels$resourceExists(direct)) {
-            copycatWheels$overrideCache.put(blockId, true);
-            return direct;
-        }
-
-        final ResourceLocation alias = copycatWheels$aliases.get(blockId);
-        if (alias != null) {
-            final ResourceLocation aliasPath = copycatWheels$deriveOverridePath(alias);
-            if (copycatWheels$resourceExists(aliasPath)) {
-                copycatWheels$overrideCache.put(blockId, true);
-                CopycatWheelsMod.LOGGER.info("[CW-OVERRIDE] {} -> alias {}", blockId, alias);
-                return aliasPath;
-            }
-        }
-
-        copycatWheels$overrideCache.put(blockId, false);
-        return null;
-    }
-
-    private static boolean copycatWheels$resourceExists(final ResourceLocation model) {
-        final ResourceLocation jsonPath = ResourceLocation.fromNamespaceAndPath(
-                model.getNamespace(), "models/" + model.getPath() + ".json");
-        try {
-            return Minecraft.getInstance().getResourceManager().getResource(jsonPath).isPresent();
-        } catch (Exception e) { return false; }
-    }
-
-    private static ResourceLocation copycatWheels$deriveOverridePath(ResourceLocation blockId) {
-        return ResourceLocation.fromNamespaceAndPath("offroad", "block/overrides/" + blockId.getPath());
-    }
-
-    private static void copycatWheels$renderCustomModel(
-            ResourceLocation modelLoc, BlockState blockState,
-            PoseStack ms, MultiBufferSource.BufferSource buffer, int light
-    ) {
-        try {
-            PartialModel pm = PartialModel.of(modelLoc);
-            SuperByteBuffer buf = CachedBuffers.partial(pm, blockState);
-            VertexConsumer vb = buffer.getBuffer(RenderType.cutoutMipped());
-            buf.light(light).renderInto(ms, vb);
-        } catch (Throwable t) {
-            CopycatWheelsMod.LOGGER.warn("[CW-OVERRIDE] failed to render custom model {}", modelLoc, t);
         }
     }
 
@@ -406,7 +335,7 @@ public class CopycatWheelsClientRenderEvents {
 
             ms.translate(dx, height, dz);
         } catch (Throwable t) {
-            //CopycatWheelsMod.LOGGER.warn("[CW-TRACKS] offset invocation failed, disabling", t);
+            CopycatWheelsMod.LOGGER.warn("[CW-TRACKS] offset invocation failed, disabling", t);
             copycatWheels$tracksLateralMethod = null;
         }
     }
@@ -419,7 +348,7 @@ public class CopycatWheelsClientRenderEvents {
                         .getDeclaredMethod("getLerpedYaw", double.class);
                 copycatWheels$lerpedYawMethod.setAccessible(true);
             } catch (Exception e) {
-                //CopycatWheelsMod.LOGGER.warn("[CopycatWheels] getLerpedYaw reflection failed", e);
+                CopycatWheelsMod.LOGGER.warn("[CopycatWheels] getLerpedYaw reflection failed", e);
                 copycatWheels$lerpedYawFailed = true;
                 return 0.0;
             }

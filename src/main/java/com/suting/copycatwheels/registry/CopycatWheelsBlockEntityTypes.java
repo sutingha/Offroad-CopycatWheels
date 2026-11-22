@@ -1,6 +1,7 @@
 package com.suting.copycatwheels.registry;
 
 import com.suting.copycatwheels.CopycatWheelsMod;
+import com.suting.copycatwheels.content.block.copycat_wheel_mount_ii.CopycatWheelMountIIBlockEntity;
 import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,6 +19,13 @@ public class CopycatWheelsBlockEntityTypes {
                             (pos, state) -> new WheelMountBlockEntity(
                                     CopycatWheelsBlockEntityTypes.COPYCAT_WHEEL_MOUNT.get(), pos, state),
                             CopycatWheelsBlocks.COPYCAT_WHEEL_MOUNT.get()
+                    ).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CopycatWheelMountIIBlockEntity>> COPYCAT_WHEEL_MOUNT_II =
+            BE_TYPES.register("copycat_wheel_mount_ii",
+                    () -> BlockEntityType.Builder.of(
+                            CopycatWheelMountIIBlockEntity::new,
+                            CopycatWheelsBlocks.COPYCAT_WHEEL_MOUNT_II.get()
                     ).build(null));
 
     public static void register(final IEventBus modEventBus) {

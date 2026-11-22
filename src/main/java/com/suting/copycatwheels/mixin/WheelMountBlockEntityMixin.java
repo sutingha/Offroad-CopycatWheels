@@ -11,6 +11,8 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +40,20 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
     @Unique private float copycatWheels$offsetY = 0f;
     @Unique private float copycatWheels$offsetZ = 0f;
     @Unique @Nullable private BlockState copycatWheels$material = null;
+
+    @Unique private boolean copycatWheels$lightInitDone = false;
+
+    @Inject(method = "saveToItem", at = @At("HEAD"), cancellable = true, require = 0)
+    private void copycatWheels$skipSaveToItem(final ItemStack stack, final CallbackInfo ci) {
+        ci.cancel();
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void copycatWheels$onFirstTick(final CallbackInfo ci) {
+        if (this.copycatWheels$lightInitDone) return;
+        this.copycatWheels$lightInitDone = true;
+        copycatWheels$updateAuxLightNow();
+    }
 
     @Override
     public void copycatWheels$setCopycatBlock(@Nullable final ResourceLocation id) {
@@ -128,23 +144,12 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
         if (Objects.equals(this.copycatWheels$material, state)) return;
         this.copycatWheels$material = state;
         copycatWheels$sync();
+        copycatWheels$updateAuxLightNow();
     }
 
     @Override @Nullable
     public BlockState copycatWheels$getMaterial() {
         return this.copycatWheels$material;
-    }
-
-    @Unique
-    private void copycatWheels$updateLight() {
-        final WheelMountBlockEntity self = (WheelMountBlockEntity) (Object) this;
-        if (self.getLevel() != null) {
-            AuxiliaryLightManager lm = self.getLevel().getAuxLightManager(self.getBlockPos());
-            if (lm != null) {
-                BlockState mat = this.copycatWheels$material;
-                lm.setLightAt(self.getBlockPos(), mat != null ? mat.getLightEmission(self.getLevel(), self.getBlockPos()) : 0);
-            }
-        }
     }
 
     @Unique
@@ -157,8 +162,21 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
         if (self.getLevel() != null) {
             self.getLevel().sendBlockUpdated(
                     self.getBlockPos(), self.getBlockState(), self.getBlockState(), 3);
-            copycatWheels$updateLight();
+            self.getLevel().getChunkSource().getLightEngine().checkBlock(self.getBlockPos());
         }
+    }
+
+    @Unique
+    private void copycatWheels$updateAuxLightNow() {
+        final WheelMountBlockEntity self = (WheelMountBlockEntity) (Object) this;
+        final Level level = self.getLevel();
+        if (level == null) return;
+        final AuxiliaryLightManager lm = level.getAuxLightManager(self.getBlockPos());
+        if (lm == null) return;
+        final int light = (this.copycatWheels$material != null && !this.copycatWheels$material.isAir())
+                ? this.copycatWheels$material.getLightEmission(level, self.getBlockPos())
+                : 0;
+        lm.setLightAt(self.getBlockPos(), light);
     }
 
     @Inject(method = "write", at = @At("TAIL"))
@@ -245,13 +263,13 @@ public abstract class WheelMountBlockEntityMixin implements CopycatWheelAccess {
             this.copycatWheels$material = null;
         }
 
-        if (clientPacket && prevMaterial != this.copycatWheels$material) {
+        if (!Objects.equals(prevMaterial, this.copycatWheels$material)) {
             self.requestModelDataUpdate();
+            copycatWheels$updateAuxLightNow();
             if (self.getLevel() != null) {
                 self.getLevel().sendBlockUpdated(
                         self.getBlockPos(), self.getBlockState(), self.getBlockState(), 3);
-          
-                copycatWheels$updateLight();
+                self.getLevel().getChunkSource().getLightEngine().checkBlock(self.getBlockPos());
             }
         }
     }

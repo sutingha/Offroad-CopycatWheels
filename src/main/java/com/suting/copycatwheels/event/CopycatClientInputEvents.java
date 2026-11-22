@@ -1,10 +1,9 @@
-package com.suting.copycatwheels.event;
+package com.suting.copycatwheels.client;
 
 import com.suting.copycatwheels.CopycatWheelsMod;
-import com.suting.copycatwheels.client.CopycatKeys;
 import com.suting.copycatwheels.core.CopycatRenderState;
+import com.suting.copycatwheels.core.CopycatWheelAccess;
 import com.suting.copycatwheels.registry.CopycatItems;
-import dev.ryanhcode.offroad.content.blocks.wheel_mount.WheelMountBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -32,15 +31,6 @@ public class CopycatClientInputEvents {
         final Player player = mc.player;
         if (player == null) return;
 
-        while (CopycatKeys.CAMO_HINT_TOGGLE.consumeClick()) {
-            CopycatRenderState.camoHintEnabled = !CopycatRenderState.camoHintEnabled;
-            player.displayClientMessage(
-                    Component.translatable(CopycatRenderState.camoHintEnabled
-                            ? "copycatwheels.msg.camo_hint_on"
-                            : "copycatwheels.msg.camo_hint_off"),
-                    false);
-        }
-
         if (!Screen.hasAltDown()) return;
         if (!copycatWheels$holdingDebugger(player)) return;
 
@@ -55,10 +45,11 @@ public class CopycatClientInputEvents {
         };
 
         mc.gui.setOverlayMessage(
-                Component.translatable(modeKey)
-                        .copy()
-                        .append(Component.literal(" §8[§7滚轮切换§8]")),
-                false);
+            Component.translatable(modeKey)
+                .copy()
+                .append(Component.translatable("copycatwheels.mode.scroll_hint"))
+            , false
+        );
     }
 
     @SubscribeEvent
@@ -90,7 +81,7 @@ public class CopycatClientInputEvents {
 
         final BlockPos pos = event.getPos();
         final BlockEntity be = player.level().getBlockEntity(pos);
-        if (!(be instanceof WheelMountBlockEntity)) return;
+        if (!(be instanceof CopycatWheelAccess)) return;
         if (!player.level().isClientSide) return;
 
         event.setCanceled(true);

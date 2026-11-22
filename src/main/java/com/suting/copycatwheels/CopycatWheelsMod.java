@@ -5,6 +5,7 @@ import com.suting.copycatwheels.core.CopycatConfig;
 import com.suting.copycatwheels.event.CopycatWheelsCommands;
 import com.suting.copycatwheels.registry.CopycatWheelsBlockEntityTypes;
 import com.suting.copycatwheels.registry.CopycatWheelsBlocks;
+import dev.ryanhcode.sable.platform.SableEventPlatform;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -25,10 +26,8 @@ public class CopycatWheelsMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-
     public static final DeferredItem<Item> GUNMU_ICON = ITEMS.register(
-            "gunmu_icon",
-            () -> new Item(new Item.Properties())
+            "gunmu_icon", () -> new Item(new Item.Properties())
     );
 
     public CopycatWheelsMod(IEventBus modEventBus, ModContainer modContainer) {
@@ -37,11 +36,15 @@ public class CopycatWheelsMod {
 
         ITEMS.register(modEventBus);
 
-
         CopycatWheelsBlocks.register(modEventBus);
         CopycatWheelsBlockEntityTypes.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, CopycatConfig.SPEC);
+        
+        SableEventPlatform.INSTANCE.onPhysicsTick((system, timeStep) -> {
+            com.suting.copycatwheels.content.block.copycat_wheel_mount_ii.CopycatWheelMountIIBlockEntity.applyAllBatchedForces(system, timeStep);
+        });
+
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
     }
 

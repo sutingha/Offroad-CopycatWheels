@@ -7,6 +7,7 @@ An addon for **Create: Aeronautics** that adds copycat wheel mounts and copycat 
 ## Features
 
 - **Copycat Wheel Mount** — A lightweight wheel mount.
+- **Copycat Wheel Mount II** — A lightweight wheel mount for two tires.
 - **Model Copycat Tire** — A tire that displays a copycat block model instead of its own model.
 - **Copycat Wheel Debugger** — An in-game tool for fine-tuning rotation, scale, offset, collision radius, and friction.
 
@@ -22,12 +23,6 @@ An addon for **Create: Aeronautics** that adds copycat wheel mounts and copycat 
 ## Optional
 
 - **Create: Tracks** — Copycat Wheel Mounts will use Tracks' adjustable renderer when installed.
-- **Create: Bits 'n' Bobs** — Flanged cogwheels can be a tire.
-- **Steam 'n' Rails NeoForge** — locometal flywheels also can be tire.
-
-## Key Binds
-
-- **Toggle Copycat Hint** (default `H`) — Show/hide the copycat material ID message(for Overrides).
 
 ## License
 

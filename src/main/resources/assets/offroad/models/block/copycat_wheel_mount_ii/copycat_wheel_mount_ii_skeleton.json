@@ -4,7 +4,8 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"2": "offroad:block/suspension_0",
-		"3": "offroad:block/suspension_1"
+		"3": "offroad:block/suspension_1",
+		"particle": "offroad:block/suspension_1"
 	},
 	"elements": [
 		{

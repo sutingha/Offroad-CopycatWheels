@@ -1,5 +1,6 @@
 package com.suting.copycatwheels.content.block.copycat_wheel_mount;
 
+import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
 import com.suting.copycatwheels.core.CopycatRenderState;
 import com.suting.copycatwheels.core.CopycatWheelAccess;
@@ -10,7 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -30,12 +31,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
 
-public class CopycatWheelMountBlock extends WheelMountBlock {
+public class CopycatWheelMountBlock extends WheelMountBlock implements IWrenchable {
 
     public CopycatWheelMountBlock(final Properties properties) {
         super(properties);
@@ -46,39 +46,102 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
         return CopycatWheelsBlockEntityTypes.COPYCAT_WHEEL_MOUNT.get();
     }
 
-    private BlockState copycatWheels$getMaterial(BlockGetter level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof WheelMountBlockEntity mount
-                && mount instanceof CopycatWheelAccess access) {
-            BlockState material = access.copycatWheels$getMaterial();
-            if (material != null && !material.isAir()) {
-                return material;
-            }
-        }
-        return null;
-    }
-
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        BlockState material = copycatWheels$getMaterial(level, pos);
-        return material != null ? material.getShape(level, pos, context) : super.getShape(state, level, pos, context);
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        BlockState material = copycatWheels$getMaterial(level, pos);
-        return material != null ? material.getCollisionShape(level, pos, context) : super.getCollisionShape(state, level, pos, context);
-    }
-
-    @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        BlockState material = copycatWheels$getMaterial(level, pos);
-        return material != null ? material.getOcclusionShape(level, pos) : super.getOcclusionShape(state, level, pos);
+    public boolean hasDynamicLightEmission(final BlockState state) {
+        return true;
     }
 
     @Override
     public int getLightEmission(final BlockState state, final BlockGetter level, final BlockPos pos) {
         final AuxiliaryLightManager lm = level.getAuxLightManager(pos);
-        return lm != null ? lm.getLightAt(pos) : super.getLightEmission(state, level, pos);
+        if (lm != null) {
+            final int aux = lm.getLightAt(pos);
+            if (aux > 0) return aux;
+        }
+        if (level.getBlockEntity(pos) instanceof CopycatWheelAccess access) {
+            final BlockState material = access.copycatWheels$getMaterial();
+            if (material != null && !material.isAir()) {
+                return material.getLightEmission(level, pos);
+            }
+        }
+        return super.getLightEmission(state, level, pos);
+    }
+
+
+    @Override
+    public InteractionResult onSneakWrenched(final BlockState state, final UseOnContext context) {
+        final Level level = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+        final Player player = context.getPlayer();
+        if (player == null) {
+            return InteractionResult.PASS;
+        }
+
+        final BlockHitResult hit = new BlockHitResult(
+                context.getClickLocation(), context.getClickedFace(), pos, false);
+
+        final ItemInteractionResult crouch = super.useItemOn(
+                context.getItemInHand(), state, level, pos, player, context.getHand(), hit);
+        if (crouch == ItemInteractionResult.SUCCESS || crouch == ItemInteractionResult.CONSUME) {
+            return InteractionResult.SUCCESS;
+        }
+
+        if (!(level instanceof final ServerLevel serverLevel)) {
+            return InteractionResult.SUCCESS;
+        }
+        if (!player.isCreative()) {
+            final ItemStack drop = new ItemStack(state.getBlock());
+            if (!player.getInventory().add(drop)) {
+                player.drop(drop, false);
+            }
+        }
+        state.spawnAfterBreak(serverLevel, pos, ItemStack.EMPTY, true);
+        level.destroyBlock(pos, false);
+        IWrenchable.playRemoveSound(level, pos);
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public InteractionResult onWrenched(final BlockState state, final UseOnContext context) {
+        final Player player = context.getPlayer();
+        final Level level = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+        final Direction hitFace = context.getClickedFace();
+        final Direction facing = state.getValue(WheelMountBlock.HORIZONTAL_FACING);
+
+        if (hitFace.equals(facing) || hitFace == Direction.DOWN) {
+            return super.onWrenched(state, context);
+        }
+
+        if (level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount
+                && mount instanceof final CopycatWheelAccess access) {
+            final BlockState material = access.copycatWheels$getMaterial();
+            if (material != null && !material.isAir()) {
+                if (!level.isClientSide) {
+                    if (player == null || !player.hasInfiniteMaterials()) {
+                        Containers.dropItemStack(level,
+                                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                                new ItemStack(material.getBlock()));
+                    }
+                    access.copycatWheels$setMaterial(null);
+                    level.playSound(null, pos, material.getSoundType().getBreakSound(),
+                            SoundSource.BLOCKS, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
+                    level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(material));
+                }
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return super.onWrenched(state, context);
+    }
+
+    @Override
+    public BlockState playerWillDestroy(final Level level, final BlockPos pos,
+                                        final BlockState state, final Player player) {
+        if (!level.isClientSide && player != null && player.hasInfiniteMaterials()
+                && level.getBlockEntity(pos) instanceof final CopycatWheelAccess access) {
+            access.copycatWheels$setMaterial(null);
+        }
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -111,14 +174,12 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
             }
 
             final BlockState existing = access.copycatWheels$getMaterial();
-
             if (existing != null && !existing.isAir()) {
                 if (existing.is(blockItem.getBlock())) {
-                    if (!copycatWheels$cycleMaterial(existing, access)) {
-                        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    if (copycatWheels$cycleMaterial(existing, access)) {
+                        level.playSound(null, pos, existing.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0F, 0.95F);
+                        return ItemInteractionResult.SUCCESS;
                     }
-                    level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.75F, 0.95F);
-                    return ItemInteractionResult.SUCCESS;
                 }
                 return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
             }
@@ -149,20 +210,18 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
             }
             level.playSound(null, pos, newMaterial.getSoundType().getPlaceSound(),
                     SoundSource.BLOCKS, 1.0F, 0.95F);
-            
+
             if (CopycatRenderState.camoHintEnabled) {
                 player.displayClientMessage(
                         Component.translatable("copycatwheels.msg.copycat_set",
-                                BuiltInRegistries.BLOCK.getKey(block).toString()),
-                        true);
+                                BuiltInRegistries.BLOCK.getKey(block).toString()), true);
             }
             return ItemInteractionResult.SUCCESS;
         }
-
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
-    private static boolean copycatWheels$cycleMaterial(BlockState material, CopycatWheelAccess access) {
+    public static boolean copycatWheels$cycleMaterial(BlockState material, CopycatWheelAccess access) {
         if (material.hasProperty(TrapDoorBlock.HALF) && material.getOptionalValue(TrapDoorBlock.OPEN).orElse(false)) {
             access.copycatWheels$setMaterial(material.cycle(TrapDoorBlock.HALF));
         } else if (material.hasProperty(BlockStateProperties.FACING)) {
@@ -182,52 +241,6 @@ public class CopycatWheelMountBlock extends WheelMountBlock {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public InteractionResult onWrenched(final BlockState state, final UseOnContext context) {
-        final Player player = context.getPlayer();
-        if (player != null && player.isShiftKeyDown()) return super.onWrenched(state, context);
-
-        final Direction hitFace = context.getClickedFace();
-        final Direction facing = state.getValue(WheelMountBlock.HORIZONTAL_FACING);
-
-        if (hitFace.equals(facing) || hitFace == Direction.DOWN) {
-            return super.onWrenched(state, context);
-        }
-
-        final Level level = context.getLevel();
-        final BlockPos pos = context.getClickedPos();
-
-        if (level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount
-                && mount instanceof final CopycatWheelAccess access) {
-            final BlockState material = access.copycatWheels$getMaterial();
-            if (material != null && !material.isAir()) {
-                if (!level.isClientSide) {
-                    if (player == null || !player.hasInfiniteMaterials()) {
-                        Containers.dropItemStack(level,
-                                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                                new ItemStack(material.getBlock()));
-                    }
-                    access.copycatWheels$setMaterial(null);
-                    level.playSound(null, pos, material.getSoundType().getBreakSound(),
-                            SoundSource.BLOCKS, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
-                    level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(material));
-                }
-                return InteractionResult.SUCCESS;
-            }
-        }
-        return super.onWrenched(state, context);
-    }
-
-    @Override
-    public BlockState playerWillDestroy(final Level level, final BlockPos pos,
-                                        final BlockState state, final Player player) {
-        if (!level.isClientSide && player != null && player.hasInfiniteMaterials()
-                && level.getBlockEntity(pos) instanceof final CopycatWheelAccess access) {
-            access.copycatWheels$setMaterial(null);
-        }
-        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

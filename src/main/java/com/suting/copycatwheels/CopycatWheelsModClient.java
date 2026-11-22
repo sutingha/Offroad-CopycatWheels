@@ -1,12 +1,10 @@
 package com.suting.copycatwheels;
 
-import com.suting.copycatwheels.client.CopycatKeys;
 import com.suting.copycatwheels.client.CopycatWheelsClientColors;
 import com.suting.copycatwheels.client.CopycatWheelsModelRegistration;
 import com.suting.copycatwheels.core.CopycatConfig;
 import com.suting.copycatwheels.core.CopycatRenderState;
 import com.suting.copycatwheels.registry.CopycatWheelsBlocks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
@@ -16,7 +14,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
@@ -26,10 +23,6 @@ public class CopycatWheelsModClient {
     public CopycatWheelsModClient(ModContainer container, IEventBus modEventBus) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         CopycatWheelsModelRegistration.register(modEventBus);
-
-        modEventBus.addListener((RegisterKeyMappingsEvent event) -> {
-            event.register(CopycatKeys.CAMO_HINT_TOGGLE);
-        });
     }
 
     @SubscribeEvent

@@ -2,6 +2,7 @@ package com.suting.copycatwheels.registry;
 
 import com.suting.copycatwheels.CopycatWheelsMod;
 import com.suting.copycatwheels.content.block.copycat_wheel_mount.CopycatWheelMountBlock;
+import com.suting.copycatwheels.content.block.copycat_wheel_mount_ii.CopycatWheelMountIIBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -15,6 +16,17 @@ public class CopycatWheelsBlocks {
     public static final DeferredBlock<CopycatWheelMountBlock> COPYCAT_WHEEL_MOUNT =
             BLOCKS.register("copycat_wheel_mount",
                     () -> new CopycatWheelMountBlock(
+                            BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.COLOR_GRAY)
+                                    .noOcclusion()
+                                    .isRedstoneConductor((s, l, p) -> false)
+                                    .sound(SoundType.STONE)
+                                    .strength(2.0F)
+                    ));
+
+    public static final DeferredBlock<CopycatWheelMountIIBlock> COPYCAT_WHEEL_MOUNT_II =
+            BLOCKS.register("copycat_wheel_mount_ii",
+                    () -> new CopycatWheelMountIIBlock(
                             BlockBehaviour.Properties.of()
                                     .mapColor(MapColor.COLOR_GRAY)
                                     .noOcclusion()

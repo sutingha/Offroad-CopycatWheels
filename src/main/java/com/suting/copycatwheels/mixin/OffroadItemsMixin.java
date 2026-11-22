@@ -39,6 +39,14 @@ public class OffroadItemsMixin {
                             ctx.getName(),
                             ResourceLocation.fromNamespaceAndPath("copycatwheels", "block/copycat_wheel_mount_empty")))
                     .register();
+        
+            CopycatItems.COPYCAT_WHEEL_MOUNT_II = REGISTRATE
+                    .item("copycat_wheel_mount_ii",
+                             (props) -> new BlockItem(CopycatWheelsBlocks.COPYCAT_WHEEL_MOUNT_II.get(), props))
+                    .model((ctx, prov) -> prov.withExistingParent(
+                             ctx.getName(),
+                             ResourceLocation.fromNamespaceAndPath("copycatwheels", "block/copycat_wheel_mount_ii_empty")))
+                    .register();
 
             CopycatItems.COPYCAT_WHEEL =
                     REGISTRATE.item("copycat_wheel", TireItem::new)

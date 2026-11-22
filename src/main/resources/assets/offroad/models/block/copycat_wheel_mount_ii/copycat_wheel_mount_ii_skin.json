@@ -4,7 +4,8 @@
 	"texture_size": [32, 32],
 	"textures": {
 		"2": "create:block/copycat_base",
-		"particle": "create:block/copycat_base"
+		"particle": "create:block/copycat_base",
+		"particle": "offroad:block/suspension_1"
 	},
 	"elements": [
 		{

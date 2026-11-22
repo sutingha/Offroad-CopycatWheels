@@ -49,8 +49,7 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
         BlockState material = blockEntityData.get(CopycatWheelModelProperties.MATERIAL_PROPERTY);
         if (material == null || material.isAir()) {
             try {
-                if (level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount
-                        && mount instanceof final CopycatWheelAccess access) {
+                if (level.getBlockEntity(pos) instanceof final CopycatWheelAccess access) {
                     material = access.copycatWheels$getMaterial();
                 }
             } catch (final Throwable ignored) {}
@@ -264,8 +263,13 @@ public class CopycatWheelMountModel extends BakedModelWrapperWithData {
             final float dH = (float) axisH.choose(sx - mPx[0], sy - mPy[0], sz - mPz[0]);
             final float dV = (float) axisV.choose(sx - mPx[0], sy - mPy[0], sz - mPz[0]);
 
-            final float s = (dH * e2V - dV * e2H) / det;
-            final float t = (e1H * dV - e1V * dH) / det;
+            float s = (dH * e2V - dV * e2H) / det;
+            float t = (e1H * dV - e1V * dH) / det;
+
+            if (s < 1e-5f) s = 0f;
+            else if (s > 1f - 1e-5f) s = 1f;
+            if (t < 1e-5f) t = 0f;
+            else if (t > 1f - 1e-5f) t = 1f;
 
             final float u = (1 - s) * (1 - t) * mU[0]
                     + s * (1 - t) * mU[1]

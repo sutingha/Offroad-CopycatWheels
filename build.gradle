@@ -165,12 +165,12 @@ dependencies {
 
     //implementation "com.simibubi.create:create-1.21.1:6.0.10-281"
     //implementation "maven.modrinth:sable:1.2.2+mc1.21.1"
-    //implementation files("libs/create-aeronautics-bundled-1.21.1-1.2.1.jar")
+    //implementation files("libs/create-aeronautics-bundled-1.21.1-1.3.2.jar")
     //implementation files("libs/*")
     //compileOnly fileTree(dir: "libs", include: ["*.jar"])
     //runtimeOnly fileTree(dir: "libs", include: ["*.jar"])
-    //implementation files("libs/offroad-neoforge-1.21.1-1.2.1.jar")
-    //implementation files("libs/simulated-neoforge-1.21.1-1.2.1.jar")
+    //implementation files("libs/offroad-neoforge-1.21.1-1.3.2.jar")
+    //implementation files("libs/simulated-neoforge-1.21.1-1.3.2.jar")
 
 
     //Create
@@ -188,17 +188,17 @@ dependencies {
 
 
     //Create Aero
-    runtimeOnly files("libs/create-aeronautics-bundled-1.21.1-1.2.1.jar")
+    runtimeOnly files("libs/create-aeronautics-bundled-1.21.1-1.3.2.jar")
 
-    compileOnly files("libs/dev.ryanhcode.offroad.offroad-neoforge-1.21.1-1.2.1.jar")
-    compileOnly files("libs/dev.simulated_team.simulated.simulated-neoforge-1.21.1-1.2.1.jar")
-    compileOnly files("libs/dev.eriksonn.aeronautics.aeronautics-neoforge-1.21.1-1.2.1.jar")
+    compileOnly files("libs/dev.ryanhcode.offroad.offroad-neoforge-1.21.1-1.3.2.jar")
+    compileOnly files("libs/dev.simulated_team.simulated.simulated-neoforge-1.21.1-1.3.2.jar")
+    compileOnly files("libs/dev.eriksonn.aeronautics.aeronautics-neoforge-1.21.1-1.3.2.jar")
 
 
     //Aero Tool guns (for schematics)
     runtimeOnly files("libs/create_aeronautics_toolgun-0.2.0.jar")
-
-
+    //tracks
+    compileOnly files("libs/tracks-neoforge-1.21.1-1.0.1.jar")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -256,7 +256,8 @@ idea {
 jar {
     manifest {
         attributes([
-            'MixinConfigs': 'copycatwheels.mixins.json'
+            'MixinConfigs': 'copycatwheels.mixins.json',
+            'MixinConfigs': 'copycatwheels.mixins.json,copycatwheels.tracks.mixins.json'
         ])
     }
 }
