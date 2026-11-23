@@ -1,14 +1,14 @@
 package com.suting.copycatwheels.content.block.copycat_wheel_mount_ii;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.foundation.block.IBE;
 import com.suting.copycatwheels.content.block.copycat_wheel_mount.CopycatWheelMountBlock;
 import com.suting.copycatwheels.core.CopycatBlockDrops;
 import com.suting.copycatwheels.core.CopycatRenderState;
 import com.suting.copycatwheels.core.CopycatWheelAccess;
 import com.suting.copycatwheels.registry.CopycatWheelsBlockEntityTypes;
-import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
-import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
-import com.simibubi.create.foundation.block.IBE;
 import dev.ryanhcode.offroad.index.OffroadDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,7 +16,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
@@ -38,11 +37,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+
+import java.util.List;
 
 public class CopycatWheelMountIIBlock extends HorizontalKineticBlock implements IBE<CopycatWheelMountIIBlockEntity>, IWrenchable {
 
@@ -102,6 +104,12 @@ public class CopycatWheelMountIIBlock extends HorizontalKineticBlock implements 
         return super.getLightEmission(state, level, pos);
     }
 
+    // ★ 唯一需要覆写的掉落入口
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(state.getBlock()));
+    }
+
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return state.getValue(TRACKS_HIDDEN) ? RenderShape.INVISIBLE : super.getRenderShape(state);
@@ -136,42 +144,6 @@ public class CopycatWheelMountIIBlock extends HorizontalKineticBlock implements 
         }
         return super.getOcclusionShape(state, level, pos);
     }
-
-    @Override
-    public InteractionResult onSneakWrenched(final BlockState state, final UseOnContext context) {
-        final Level level = context.getLevel();
-        final BlockPos pos = context.getClickedPos();
-        final Player player = context.getPlayer();
-        if (player == null) {
-            return InteractionResult.PASS;
-        }
-
-        final BlockHitResult hit = new BlockHitResult(
-                context.getClickLocation(), context.getClickedFace(), pos, false);
-
-        final ItemInteractionResult crouch = useItemOn(
-                context.getItemInHand(), state, level, pos, player, context.getHand(), hit);
-        if (crouch == ItemInteractionResult.SUCCESS || crouch == ItemInteractionResult.CONSUME) {
-            return InteractionResult.SUCCESS;
-        }
-
-        if (!(level instanceof final ServerLevel serverLevel)) {
-            return InteractionResult.SUCCESS;
-        }
-
-        if (player != null && !player.isCreative()) {
-            final ItemStack drop = new ItemStack(state.getBlock());
-            if (!player.getInventory().add(drop)) {
-                player.drop(drop, false);
-            }
-        }
-
-        state.spawnAfterBreak(serverLevel, pos, ItemStack.EMPTY, true);
-        level.destroyBlock(pos, false);
-        IWrenchable.playRemoveSound(level, pos);
-        return InteractionResult.SUCCESS;
-    }
-
 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
@@ -384,6 +356,7 @@ public class CopycatWheelMountIIBlock extends HorizontalKineticBlock implements 
                         Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                                 new ItemStack(material.getBlock()));
                     }
+
                     ResourceLocation leftCb = be.getLeftCopycatBlock();
                     ResourceLocation rightCb = be.getRightCopycatBlock();
                     if (leftCb != null) {

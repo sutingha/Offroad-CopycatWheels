@@ -1,6 +1,7 @@
 package com.suting.copycatwheels.content.block.copycat_wheel_mount;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
+import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
 import com.suting.copycatwheels.core.CopycatRenderState;
 import com.suting.copycatwheels.core.CopycatWheelAccess;
@@ -30,10 +31,13 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.world.AuxiliaryLightManager;
+
+import java.util.List;
 
 public class CopycatWheelMountBlock extends WheelMountBlock implements IWrenchable {
 
@@ -67,34 +71,34 @@ public class CopycatWheelMountBlock extends WheelMountBlock implements IWrenchab
         return super.getLightEmission(state, level, pos);
     }
 
+    // ★ 唯一需要覆写的掉落入口：挖掘和扳手拆除都会走这里
+    @Override
+    public List<ItemStack> getDrops(final BlockState state, final LootParams.Builder params) {
+        return List.of(new ItemStack(state.getBlock()));
+    }
 
     @Override
     public InteractionResult onSneakWrenched(final BlockState state, final UseOnContext context) {
+        final Player player = context.getPlayer();
         final Level level = context.getLevel();
         final BlockPos pos = context.getClickedPos();
-        final Player player = context.getPlayer();
-        if (player == null) {
-            return InteractionResult.PASS;
-        }
+        if (level.isClientSide) return InteractionResult.SUCCESS;
 
+        // 1. 先尝试父类隐藏交互（正面/顶面切换隐藏，成功则消费事件）
         final BlockHitResult hit = new BlockHitResult(
                 context.getClickLocation(), context.getClickedFace(), pos, false);
-
         final ItemInteractionResult crouch = super.useItemOn(
                 context.getItemInHand(), state, level, pos, player, context.getHand(), hit);
         if (crouch == ItemInteractionResult.SUCCESS || crouch == ItemInteractionResult.CONSUME) {
             return InteractionResult.SUCCESS;
         }
 
-        if (!(level instanceof final ServerLevel serverLevel)) {
-            return InteractionResult.SUCCESS;
-        }
+        // 2. 该面无隐藏交互 → 拆除方块（手动给轮架物品 + onRemove 处理内容物）
         if (!player.isCreative()) {
             final ItemStack drop = new ItemStack(state.getBlock());
-            if (!player.getInventory().add(drop)) {
-                player.drop(drop, false);
-            }
+            if (!player.getInventory().add(drop)) player.drop(drop, false);
         }
+        final ServerLevel serverLevel = (ServerLevel) level;
         state.spawnAfterBreak(serverLevel, pos, ItemStack.EMPTY, true);
         level.destroyBlock(pos, false);
         IWrenchable.playRemoveSound(level, pos);
@@ -104,14 +108,15 @@ public class CopycatWheelMountBlock extends WheelMountBlock implements IWrenchab
     @Override
     public InteractionResult onWrenched(final BlockState state, final UseOnContext context) {
         final Player player = context.getPlayer();
-        final Level level = context.getLevel();
-        final BlockPos pos = context.getClickedPos();
         final Direction hitFace = context.getClickedFace();
         final Direction facing = state.getValue(WheelMountBlock.HORIZONTAL_FACING);
 
         if (hitFace.equals(facing) || hitFace == Direction.DOWN) {
-            return super.onWrenched(state, context);
+            return rotateWithWrench(state, context);
         }
+
+        final Level level = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
 
         if (level.getBlockEntity(pos) instanceof final WheelMountBlockEntity mount
                 && mount instanceof final CopycatWheelAccess access) {
@@ -131,7 +136,23 @@ public class CopycatWheelMountBlock extends WheelMountBlock implements IWrenchab
                 return InteractionResult.SUCCESS;
             }
         }
-        return super.onWrenched(state, context);
+        return rotateWithWrench(state, context);
+    }
+
+    private InteractionResult rotateWithWrench(final BlockState state, final UseOnContext context) {
+        final Level level = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
+
+        final BlockState rotated = getRotatedBlockState(state, context.getClickedFace());
+        if (!rotated.canSurvive(level, pos)) {
+            return InteractionResult.PASS;
+        }
+
+        KineticBlockEntity.switchToBlockState(level, pos, updateAfterWrenched(rotated, context));
+        if (level.getBlockState(pos) != state) {
+            IWrenchable.playRotateSound(level, pos);
+        }
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -218,6 +239,7 @@ public class CopycatWheelMountBlock extends WheelMountBlock implements IWrenchab
             }
             return ItemInteractionResult.SUCCESS;
         }
+
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 

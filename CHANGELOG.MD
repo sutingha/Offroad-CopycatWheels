@@ -1,5 +1,11 @@
+ChangeLog 0.2.1
+==============
+- Fixed GetDrop bugs
+==============
+- 修复轮架掉落物问题
+
 ChangeLog 0.2.0
-===========
+=============
 - Moved Overrides renderer.
 - Moved Key Binds for copycat.
 - Added CopycatWheelMountII for two tires.
@@ -8,7 +14,7 @@ ChangeLog 0.2.0
 - Fixed OnWrenched / Copycat Wheel Mounts wrench interaction bugs.
 - Fixed debugger tooltip bugs.
 - Use ItemRenderer to render copycat wheel.
-===========
+=============
 - 移除了 Overrides 渲染器
 - 移除了伪装轮按键绑定
 - 新增可安装双轮胎的伪装轮悬架 II (CopycatWheelMountII)
